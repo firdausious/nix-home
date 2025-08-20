@@ -2,6 +2,8 @@
 
 This repository contains a modular and reusable Nix configuration for managing my user environment with home-manager.
 
+nix flake update nixpkgs-unstable --extra-experimental-features nix-command --extra-experimental-features flakes
+
 ## 🏗️ Unified Configuration Architecture
 
 This setup uses a **single folder/repo approach** that consolidates all Nix and Home Manager configurations without symlinks:

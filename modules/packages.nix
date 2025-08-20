@@ -65,7 +65,6 @@ let
     jq
     luarocks
     neofetch
-    neovide
     ripgrep
     tree-sitter
     tre-command
@@ -77,10 +76,12 @@ let
 
   # Development tools
   devPackages = with pkgs; [
-    lazygit
     nixfmt-classic
+    lazygit
+    waveterm
     neovim
     tmux
+    zed-editor
     asdf-vm
   ];
 
@@ -136,6 +137,7 @@ let
     htop
     btop
     dive
+    trivy
 
     railway
     azure-cli

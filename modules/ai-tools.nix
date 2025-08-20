@@ -34,6 +34,7 @@ in {
   # AI/ML packages - minimal and language agnostic
   aiPackages = with pkgs; [
     # Core AI tools
+    gemini-cli
     ollama                    # Local LLM server
     
     # Universal code analysis

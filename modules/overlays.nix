@@ -3,8 +3,10 @@
 # Overlay to get latest versions from unstable channel
 (final: prev: {
   # Development tools
+  gemini-cli = pkgs-unstable.gemini-cli;
   neovim = pkgs-unstable.neovim;
   dbmate = pkgs-unstable.dbmate;
+  zed-editor = pkgs-unstable.zed-editor;
   
   # Go
   go = pkgs-unstable.go;
