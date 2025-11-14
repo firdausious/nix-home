@@ -1,9 +1,58 @@
 { pkgs, pkgs-unstable, lib, system, homeDirectory }:
 
 let
+  # Base Python packages for backend development
+  basePythonPackages = ps: with ps; [
+    # Core Python development tools
+    pip
+    virtualenv
+    setuptools
+    wheel
+    
+    # Code quality and formatting
+    black
+    isort
+    flake8
+    pylint
+    mypy
+    autopep8
+    
+    # Testing
+    pytest
+    pytest-cov
+    pytest-asyncio
+    
+    # Common development libraries
+    requests
+    pydantic
+    python-dotenv
+    rich
+    typer
+    click
+    
+    # Data handling
+    numpy
+    pandas
+    
+    # Web development
+    fastapi
+    uvicorn
+    aiohttp
+    
+    # Database
+    psycopg2
+    sqlalchemy
+    
+    # Utilities
+    pyyaml
+    gitpython
+    
+    # Legacy/specific packages
+    scapy
+  ];
+
   # JetBrains IDEs - using unstable for latest versions
   jetbrainsIDEs = with pkgs-unstable.jetbrains; [
-
     # JetBrains Fleet - Universal IDE
     fleet
     
@@ -34,6 +83,51 @@ let
     # android-tools  # adb, fastboot, etc. (if you want system-wide access)
   ];
 
+  # Language runtimes and tools
+  languagePackages = with pkgs; [
+    # Python - Common backend development environment
+    (python313.withPackages basePythonPackages)
+
+    # Ruby
+    bundix
+    (hiPrio bundler)
+    ruby
+    fastlane
+
+    # Java
+    zulu
+    gradle
+    maven
+
+    # Go
+    go
+    air
+    gopls
+    go-task
+    gotools
+    golangci-lint
+    go-migrate
+    sqlc
+    dbmate
+
+    # Rust
+    rustup
+
+    # Node.js ecosystem
+    nodejs_24
+    bun
+
+    # PHP
+    php
+    php.packages.composer
+
+    # Other programming tools
+    opencode
+    moon
+    protobuf
+    postgresql
+  ];
+
   # Development tools and utilities
   devUtilities = with pkgs; [
     # Version control and project management
@@ -41,7 +135,6 @@ let
     gitlab-runner        # GitLab CI runner
     
     # Database tools
-    postgresql           # PostgreSQL client
     mysql80              # MySQL client
     sqlite              # SQLite
     redis               # Redis client
@@ -70,10 +163,25 @@ let
 
 in {
   # All development packages
-  devPackages = jetbrainsIDEs ++ androidTools ++ devUtilities;
+  devPackages = jetbrainsIDEs ++ androidTools ++ languagePackages ++ devUtilities;
+  
+  # Export base Python packages for extension by other modules
+  inherit basePythonPackages;
+  
+  # Go configuration
+  go = {
+    enable = true;
+    package = pkgs.go;
+    goPath = "${homeDirectory}/go";
+    goBin = "${homeDirectory}/go/bin";
+  };
 
   # Environment variables for development tools
   devSessionVariables = {
+    # Go development
+    GOPATH = "${homeDirectory}/go";
+    GOBIN = "${homeDirectory}/go/bin";
+    
     # Android development
     ANDROID_HOME = "${homeDirectory}/Library/Android/sdk";
     ANDROID_SDK_ROOT = "${homeDirectory}/Library/Android/sdk";
@@ -131,6 +239,9 @@ in {
 
   # Additional PATH entries for development tools
   devSessionPath = [
+    # Go binaries
+    "${homeDirectory}/go/bin"
+    
     # Android SDK tools
     "${homeDirectory}/Library/Android/sdk/platform-tools"
     "${homeDirectory}/Library/Android/sdk/cmdline-tools/latest/bin" 

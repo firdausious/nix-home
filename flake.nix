@@ -45,10 +45,11 @@
             homeDirectory = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
             userConfig = (import ./modules/users/${username}.nix) { inherit pkgs lib; };
             packagesConfig = import ./modules/packages.nix { inherit pkgs pkgs-unstable lib system; };
+            devToolsConfig = import ./modules/dev-tools.nix { inherit pkgs pkgs-unstable lib system homeDirectory; };
             aiToolsConfig = import ./modules/ai-tools.nix { 
               inherit pkgs pkgs-unstable lib homeDirectory; 
               aiConfig = userConfig.aiConfig;
-              basePythonPackages = packagesConfig.basePythonPackages;
+              basePythonPackages = devToolsConfig.basePythonPackages;
             };
           in
           home-manager.lib.homeManagerConfiguration {
@@ -59,29 +60,24 @@
                   inherit username homeDirectory;
                   stateVersion = defaults.stateVersion;
 
-                  packages = let
-                    # Get non-Python packages from base config
-                    nonPythonPackages = builtins.filter (pkg: 
-                      let name = pkg.name or pkg.pname or "";
-                      in !(lib.hasInfix "python" (lib.toLower name))
-                    ) packagesConfig.packages;
-                  in
-                    nonPythonPackages ++ 
-                    aiToolsConfig.aiPackages ++ 
-                    [ aiToolsConfig.pythonWithAIExtensions ] ++
-                    userConfig.extraPackages;
+                  packages = packagesConfig.packages ++ 
+                             devToolsConfig.devPackages ++ 
+                             aiToolsConfig.aiPackages ++ 
+                             [ aiToolsConfig.pythonWithAIExtensions ] ++
+                             userConfig.extraPackages;
                   shellAliases = (import ./modules/shell.nix { inherit pkgs defaults system username; }).shellAliases // 
+                                devToolsConfig.devAliases // 
                                 aiToolsConfig.aiAliases // 
                                 userConfig.extraAliases;
-                  sessionVariables = (import ./modules/languages.nix { inherit pkgs homeDirectory; }).sessionVariables // 
+                  sessionVariables = devToolsConfig.devSessionVariables // 
                                     aiToolsConfig.aiSessionVariables // 
                                     userConfig.extraSessionVariables;
-                  sessionPath = (import ./modules/languages.nix { inherit pkgs homeDirectory; }).sessionPath ++ 
+                  sessionPath = devToolsConfig.devSessionPath ++ 
                                aiToolsConfig.aiSessionPath;
                 };
 
                 programs = {
-                  go = (import ./modules/languages.nix { inherit pkgs homeDirectory; }).go;
+                  go = devToolsConfig.go;
                   zsh = (import ./modules/shell.nix { inherit pkgs defaults system username; }).zsh;
                   fzf = (import ./modules/shell.nix { inherit pkgs defaults system username; }).fzf;
                   home-manager.enable = true;
@@ -97,6 +93,10 @@
                     fi
                   fi
                 '';
+                
+                # Development tools activation scripts
+                home.activation.android-setup = home-manager.lib.hm.dag.entryAfter ["writeBoundary"] devToolsConfig.devActivationScripts.android-setup;
+                home.activation.dev-dirs = home-manager.lib.hm.dag.entryAfter ["writeBoundary"] devToolsConfig.devActivationScripts.dev-dirs;
 
                 nixpkgs.config = nixpkgsConfig;
               }

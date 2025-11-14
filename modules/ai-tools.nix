@@ -38,7 +38,6 @@ in {
     ollama                    # Local LLM server
     
     # Universal code analysis
-    tree-sitter              # Language parsing
     ast-grep                 # Multi-language AST search
     
     # API tools

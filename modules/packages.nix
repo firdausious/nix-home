@@ -1,56 +1,6 @@
 { pkgs, pkgs-unstable, lib, system }:
 
 let
-  # Base Python packages for backend development
-  basePythonPackages = ps: with ps; [
-    # Core Python development tools
-    pip
-    virtualenv
-    setuptools
-    wheel
-    
-    # Code quality and formatting
-    black
-    isort
-    flake8
-    pylint
-    mypy
-    autopep8
-    
-    # Testing
-    pytest
-    pytest-cov
-    pytest-asyncio
-    
-    # Common development libraries
-    requests
-    pydantic
-    python-dotenv
-    rich
-    typer
-    click
-    
-    # Data handling
-    numpy
-    pandas
-    
-    # Web development
-    fastapi
-    uvicorn
-    aiohttp
-    
-    # Database
-    psycopg2
-    sqlalchemy
-    
-    # Utilities
-    pyyaml
-    gitpython
-    
-    # Legacy/specific packages
-    scapy
-  ];
-
   # Core system tools
   corePackages = with pkgs; [
     bash
@@ -74,70 +24,20 @@ let
     yazi
   ];
 
-  # Development tools
+  # Development tools (editors, terminals, etc.)
   devPackages = with pkgs; [
     nixfmt-classic
     lazygit
-    waveterm
+    ghostty
     neovim
     tmux
-    zed-editor
     asdf-vm
   ];
 
-  # Language runtimes and tools
-  languagePackages = with pkgs; [
-    # Python - Common backend development environment
-    (python313.withPackages basePythonPackages)
-
-    # Ruby
-    bundix
-    (hiPrio bundler)
-    ruby
-    fastlane
-
-    # Java
-    zulu
-    gradle
-    maven
-
-    # Go
-    go
-    air
-    gopls
-    go-task
-    gotools
-    golangci-lint
-    go-migrate
-    sqlc
-    dbmate
-
-    # Rust
-    rustup
-
-    # Node.js ecosystem
-    nodejs_24
-    bun
-
-    # PHP
-    php
-    php.packages.composer
-
-    # Other
-    opencode
-    moon
-    protobuf
-    postgresql
-  ];
-
-
   # Infrastructure and cloud tools
   infraPackages = with pkgs; [
-    htop
-    btop
     dive
     trivy
-
     railway
     azure-cli
     awscli2
@@ -163,9 +63,6 @@ let
   ];
 
 in {
-  packages = corePackages ++ devPackages ++ languagePackages ++ 
-             infraPackages ++ mediaPackages ++ darwinPackages ++ linuxPackages;
-  
-  # Export base Python packages for extension by other modules
-  inherit basePythonPackages;
+  packages = corePackages ++ devPackages ++ infraPackages ++ 
+             mediaPackages ++ darwinPackages ++ linuxPackages;
 }
