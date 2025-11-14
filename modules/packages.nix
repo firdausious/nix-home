@@ -116,19 +116,18 @@ let
     rustup
 
     # Node.js ecosystem
-    nodejs_22
-    node2nix
+    nodejs_24
     bun
-    openapi-generator-cli
-    typescript
-    yarn
 
     # PHP
     php
     php.packages.composer
 
-  # Other
+    # Other
+    opencode
+    moon
     protobuf
+    postgresql
   ];
 
 

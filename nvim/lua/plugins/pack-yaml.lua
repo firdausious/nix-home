@@ -1,51 +1,5 @@
-local utils = require "astrocore"
+-- Language pack disabled to stop language servers
+-- This file has been disabled to stop Node.js language server processes
+-- To re-enable this language pack, restore the original content from the backup file
 
----@type LazySpec
-return {
-  {
-    "b0o/SchemaStore.nvim",
-    lazy = true,
-    dependencies = {
-      {
-        "AstroNvim/astrolsp",
-        ---@type AstroLSPOpts
-        opts = {
-          ---@diagnostic disable: missing-fields
-          config = {
-            yamlls = {
-              on_new_config = function(config)
-                config.settings.yaml.schemas = vim.tbl_deep_extend(
-                  "force",
-                  config.settings.yaml.schemas or {},
-                  require("schemastore").yaml.schemas()
-                )
-              end,
-              settings = { yaml = { schemaStore = { enable = false, url = "" } } },
-            },
-          },
-        },
-      },
-    },
-  },
-  {
-    "nvim-treesitter/nvim-treesitter",
-    optional = true,
-    opts = function(_, opts)
-      if opts.ensure_installed ~= "all" then
-        opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, { "xml", "yaml" })
-      end
-    end,
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    optional = true,
-    opts = function(_, opts) opts.ensure_installed = utils.list_insert_unique(opts.ensure_installed, { "yamlls" }) end,
-  },
-  {
-    "jay-babu/mason-null-ls.nvim",
-    optional = true,
-    opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, { "prettierd" })
-    end,
-  },
-}
+return {}

@@ -19,11 +19,12 @@
   gradle = pkgs-unstable.gradle;
 
   # Node.js ecosystem
-  nodejs_22 = pkgs-unstable.nodejs_22;
+  nodejs_24 = pkgs-unstable.nodejs_24;
   bun = pkgs-unstable.bun;
-  typescript = pkgs-unstable.typescript;
   
   # Infrastructure tools  
+  opencode = pkgs-unstable.opencode;
+  moon = pkgs-unstable.moon;
   railway = pkgs-unstable.railway;
   azure-cli = pkgs-unstable.azure-cli;
   awscli2 = pkgs-unstable.awscli2;

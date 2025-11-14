@@ -56,7 +56,6 @@ let
     
     # Text editors and utilities
     vim                # Vim editor
-    emacs             # Emacs editor (if you use it)
     
     # System monitoring and debugging
     htop              # Process monitor

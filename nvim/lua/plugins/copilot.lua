@@ -1,21 +1,5 @@
----@type LazySpec
-return {
-  "zbirenbaum/copilot.lua",
-  cmd = "Copilot",
-  event = "BufEnter",
-  opts = {
-    suggestion = {
-      enabled = true,
-      auto_trigger = true,
-      debounce = 150,
-      keymap = {
-        accept = "<C-;>",
-        accept_word = false,
-        accept_line = false,
-        next = "<M-]>",
-        prev = "<M-[>",
-        dismiss = "<C-]>",
-      },
-    },
-  },
-}
+-- Copilot disabled to stop copilot language server
+-- This file has been disabled to stop the copilot Node.js process
+-- To re-enable Copilot support, restore the original content from copilot.lua.bak
+
+return {}
