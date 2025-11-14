@@ -24,11 +24,10 @@ let
     yazi
   ];
 
-  # Development tools (editors, terminals, etc.)
+  # Development tools (editors, etc.)
   devPackages = with pkgs; [
     nixfmt-classic
     lazygit
-    ghostty
     neovim
     tmux
     asdf-vm

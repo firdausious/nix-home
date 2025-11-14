@@ -71,4 +71,72 @@
       "--preview-window 'right:60%' --preview 'bat'"
     ];
   };
+
+  # Ghostty terminal configuration
+  ghostty = {
+    enable = true;
+    settings = {
+      # Theme and appearance
+      theme = "catppuccin-mocha";
+      background-opacity = 0.95;
+      window-padding-x = 8;
+      window-padding-y = 8;
+      window-decoration = false;
+      window-inherit-font-size = true;
+      
+      # Font configuration
+      font-family = "JetBrains Mono";
+      font-size = 14;
+      font-weight = 500;
+      
+      # Cursor and selection
+      cursor-style = "block";
+      cursor-color = "#f5c2e7";
+      cursor-invert-fg-bg = true;
+      selection-background = "#89b4fa";
+      selection-foreground = "#1e1e2e";
+      
+      # Shell integration
+      shell-integration = "zsh";
+      confirm-close-surface = false;
+      
+      # Key bindings
+      keybind = [
+        "ctrl+shift+c=copy_to_clipboard"
+        "ctrl+shift+v=paste_from_clipboard"
+        "ctrl+shift+t=new_tab"
+        "ctrl+shift+w=close_tab"
+        "ctrl+shift+left=previous_tab"
+        "ctrl+shift+right=next_tab"
+        "ctrl+plus=increase_font_size"
+        "ctrl+minus=decrease_font_size"
+        "ctrl+0=reset_font_size"
+      ];
+      
+      # Performance and behavior
+      resize-delay = 0;
+      gpu-acceleration = true;
+      scrollback-limit = 10000;
+      
+      # Colors (Catppuccin Mocha theme colors)
+      background = "#1e1e2e";
+      foreground = "#cdd6f4";
+      color0 = "#45475a";   # black
+      color1 = "#f38ba8";   # red
+      color2 = "#a6e3a1";   # green
+      color3 = "#f9e2af";   # yellow
+      color4 = "#89b4fa";   # blue
+      color5 = "#f5c2e7";   # magenta
+      color6 = "#94e2d5";   # cyan
+      color7 = "#bac2de";   # white
+      color8 = "#585b70";   # bright black
+      color9 = "#eba0ac";   # bright red
+      color10 = "#a6e3a1";  # bright green
+      color11 = "#f2cdcd";  # bright yellow
+      color12 = "#89b4fa";  # bright blue
+      color13 = "#f5c2e7";  # bright magenta
+      color14 = "#94e2d5";  # bright cyan
+      color15 = "#a6adc8";  # bright white
+    };
+  };
 }
