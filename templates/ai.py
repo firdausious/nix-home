@@ -8,8 +8,9 @@ import os
 import sys
 import json
 import subprocess
+import requests
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Union
 import argparse
 
 # LangChain imports
@@ -17,15 +18,8 @@ try:
     from langchain_core.messages import HumanMessage, SystemMessage
     from langchain_openai import ChatOpenAI
     from langchain_anthropic import ChatAnthropic
-    
-    # Try to import langchain-ollama, fallback to manual HTTP if not available
-    try:
-        from langchain_ollama import ChatOllama
-        HAS_LANGCHAIN_OLLAMA = True
-    except ImportError:
-        HAS_LANGCHAIN_OLLAMA = False
-        print("Note: langchain-ollama not available. Install with: pip install langchain-ollama")
-        print("Falling back to HTTP requests for Ollama.")
+    # Remove langchain-ollama import to avoid compatibility issues
+    HAS_LANGCHAIN_OLLAMA = False
         
 except ImportError as e:
     print(f"Error: LangChain not installed. {e}")
@@ -53,20 +47,24 @@ class SimpleAI:
             "model": os.environ.get("AI_MODEL", "llama3.1:8b"),
             "provider": os.environ.get("AI_PROVIDER", "ollama"),
             "ollama_url": "http://127.0.0.1:11434",
-            "temperature": 0.1
+            "temperature": 0.1,
+            "max_tokens": 4096
         }
         
         if config_file.exists():
             try:
                 with open(config_file) as f:
                     return {**default_config, **json.load(f)}
-            except:
-                pass
+            except Exception as e:
+                print(f"Warning: Could not load config file: {e}")
         
         # Create config directory and file
         self.config_dir.mkdir(parents=True, exist_ok=True)
-        with open(config_file, 'w') as f:
-            json.dump(default_config, f, indent=2)
+        try:
+            with open(config_file, 'w') as f:
+                json.dump(default_config, f, indent=2)
+        except Exception as e:
+            print(f"Warning: Could not create config file: {e}")
         
         return default_config
     
@@ -74,40 +72,44 @@ class SimpleAI:
         """Initialize LLM based on configuration"""
         provider = self.config.get("provider", "ollama")
         model = self.config.get("model", "llama3.1:8b")
+        temperature = self.config.get("temperature", 0.1)
         
         try:
             if provider == "ollama":
-                if not HAS_LANGCHAIN_OLLAMA:
-                    print("Warning: langchain-ollama not available.")
-                    print("Please install it with: pip install langchain-ollama")
-                    print("For now, switching to manual HTTP implementation...")
-                    return self._create_manual_ollama_client()
-                return ChatOllama(
-                    model=model,
-                    base_url=self.config.get("ollama_url", "http://127.0.0.1:11434"),
-                    temperature=self.config.get("temperature", 0.1)
-                )
+                # Use manual HTTP implementation for maximum compatibility
+                print("Using HTTP implementation for Ollama")
+                return self._create_manual_ollama_client()
+                        
             elif provider == "openai":
+                api_key = os.environ.get("OPENAI_API_KEY")
+                if not api_key:
+                    print("Error: OPENAI_API_KEY environment variable required")
+                    sys.exit(1)
                 return ChatOpenAI(
                     model=model,
-                    temperature=self.config.get("temperature", 0.1)
+                    temperature=temperature
                 )
             elif provider == "anthropic":
+                api_key = os.environ.get("ANTHROPIC_API_KEY")
+                if not api_key:
+                    print("Error: ANTHROPIC_API_KEY environment variable required")
+                    sys.exit(1)
                 return ChatAnthropic(
-                    model=model,
-                    temperature=self.config.get("temperature", 0.1)
+                    model_name=model,
+                    temperature=temperature,
+                    timeout=120,
+                    stop=None
                 )
         except Exception as e:
             print(f"Error initializing {provider}: {e}")
-            print("Make sure the service is running and accessible")
+            print("Make sure service is running and accessible")
             sys.exit(1)
     
     def _create_manual_ollama_client(self):
-        """Create a manual HTTP client for Ollama when langchain-ollama is not available"""
-        import requests
+        """Create a manual HTTP client for Ollama"""
         
         class ManualOllamaClient:
-            def __init__(self, base_url, model, temperature):
+            def __init__(self, base_url: str, model: str, temperature: float):
                 self.base_url = base_url
                 self.model = model
                 self.temperature = temperature
@@ -141,7 +143,7 @@ class SimpleAI:
                     
                     # Create a simple response object
                     class SimpleResponse:
-                        def __init__(self, content):
+                        def __init__(self, content: str):
                             self.content = content
                     
                     return SimpleResponse(result.get("response", "No response from Ollama"))
@@ -185,7 +187,7 @@ class SimpleAI:
         return lang_map.get(ext, 'Unknown')
     
     def _get_git_context(self, path: str = ".") -> str:
-        """Get git context for the project"""
+        """Get git context for project"""
         try:
             # Get current branch
             branch = subprocess.check_output(
@@ -209,7 +211,7 @@ class SimpleAI:
             ).strip()
             
             return f"Branch: {branch}\n\nRecent commits:\n{commits}\n\nCurrent status:\n{status}"
-        except:
+        except Exception:
             return "No git repository found"
     
     def review_code(self, file_path: str) -> str:
@@ -217,14 +219,17 @@ class SimpleAI:
         if not Path(file_path).exists():
             return f"File not found: {file_path}"
         
-        with open(file_path) as f:
-            code = f.read()
+        try:
+            with open(file_path) as f:
+                code = f.read()
+        except Exception as e:
+            return f"Error reading file {file_path}: {e}"
         
         language = self._detect_language(file_path)
         git_context = self._get_git_context(str(Path(file_path).parent))
         
         system_prompt = f"""You are a senior software engineer reviewing {language} code.
-Analyze the code for:
+Analyze code for:
 - Logic errors and bugs
 - Security vulnerabilities
 - Performance issues
@@ -252,8 +257,13 @@ Please provide a detailed code review."""
             HumanMessage(content=user_prompt)
         ]
         
-        response = self.llm.invoke(messages)
-        return response.content
+        try:
+            if self.llm is None:
+                return "Error: LLM not initialized"
+            response = self.llm.invoke(messages)
+            return str(response.content) if hasattr(response, 'content') else str(response)
+        except Exception as e:
+            return f"Error getting AI response: {e}"
     
     def generate_code(self, description: str, language: Optional[str] = None, context: Optional[str] = None) -> str:
         """Generate code based on description"""
@@ -288,7 +298,7 @@ Git Context:
 
 Please provide:
 1. Complete, working code
-2. Brief explanation of the approach
+2. Brief explanation of approach
 3. Usage example if applicable"""
 
         messages = [
@@ -296,8 +306,13 @@ Please provide:
             HumanMessage(content=user_prompt)
         ]
         
-        response = self.llm.invoke(messages)
-        return response.content
+        try:
+            if self.llm is None:
+                return "Error: LLM not initialized"
+            response = self.llm.invoke(messages)
+            return str(response.content) if hasattr(response, 'content') else str(response)
+        except Exception as e:
+            return f"Error getting AI response: {e}"
     
     def analyze_project(self, path: str = ".") -> str:
         """Analyze project structure and provide insights"""
@@ -308,14 +323,17 @@ Please provide:
         
         # Get project structure
         files = []
-        for file_path in project_path.rglob("*"):
-            if file_path.is_file() and not any(part.startswith('.') for part in file_path.parts):
-                relative_path = file_path.relative_to(project_path)
-                if len(str(relative_path)) < 100:  # Avoid very long paths
-                    files.append(str(relative_path))
-        
-        # Limit files shown
-        files = sorted(files)[:50]
+        try:
+            for file_path in project_path.rglob("*"):
+                if file_path.is_file() and not any(part.startswith('.') for part in file_path.parts):
+                    relative_path = file_path.relative_to(project_path)
+                    if len(str(relative_path)) < 100:  # Avoid very long paths
+                        files.append(str(relative_path))
+            
+            # Limit files shown
+            files = sorted(files)[:50]
+        except Exception as e:
+            return f"Error scanning project: {e}"
         
         git_context = self._get_git_context(str(project_path))
         
@@ -345,8 +363,13 @@ Please provide a comprehensive project analysis."""
             HumanMessage(content=user_prompt)
         ]
         
-        response = self.llm.invoke(messages)
-        return response.content
+        try:
+            if self.llm is None:
+                return "Error: LLM not initialized"
+            response = self.llm.invoke(messages)
+            return str(response.content) if hasattr(response, 'content') else str(response)
+        except Exception as e:
+            return f"Error getting AI response: {e}"
     
     def chat(self, message: str) -> str:
         """General chat with AI"""
@@ -365,8 +388,13 @@ Be concise and practical in your responses."""
             HumanMessage(content=message)
         ]
         
-        response = self.llm.invoke(messages)
-        return response.content
+        try:
+            if self.llm is None:
+                return "Error: LLM not initialized"
+            response = self.llm.invoke(messages)
+            return str(response.content) if hasattr(response, 'content') else str(response)
+        except Exception as e:
+            return f"Error getting AI response: {e}"
 
 def main():
     parser = argparse.ArgumentParser(description="Simple AI Development Assistant")
@@ -380,6 +408,7 @@ def main():
     ai = SimpleAI()
     
     try:
+        result = ""
         if args.command == "review":
             if not args.target:
                 print("Please provide a file path to review")

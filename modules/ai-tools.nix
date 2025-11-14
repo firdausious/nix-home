@@ -3,49 +3,58 @@
 let
   # AI-specific Python packages extending the base backend packages
   aiPythonPackages = ps: (basePythonPackages ps) ++ (with ps; [
-    # AI/ML specific packages
+    # Core AI/ML packages
     langchain
     langchain-core
     langchain-community
-    langchain-ollama
     langchain-openai
     langchain-anthropic
     
-    # Vector databases and embeddings (optional - commented out for minimal setup)
-    # chromadb
-    # faiss
-    # sentence-transformers
-    # transformers
-    # torch
+    # HTTP and API support
+    requests
+    httpx
     
-    # Additional ML libraries if needed
-    # scikit-learn
-    # matplotlib
-    # seaborn
-    # plotly
-    # jupyter
-    # ipython
+    # Data processing and utilities
+    python-dotenv
+    pyyaml
+    toml
+    
+    # Vector databases and embeddings
+    chromadb
+    sentence-transformers
+    
+    # Machine learning libraries
+    scikit-learn
+    numpy
+    pandas
+    
+    # Development and analysis tools
+    jupyter
+    ipython
+    matplotlib
+    seaborn
+    plotly
+    
+    # File system utilities
+    pathspec
+    gitpython
   ]);
 
   # Python environment with AI extensions
   pythonWithAI = pkgs.python313.withPackages aiPythonPackages;
 
 in {
-  # AI/ML packages - minimal and language agnostic
+  # AI/ML packages - focused on essential tools
   aiPackages = with pkgs; [
     # Core AI tools
-    gemini-cli
     ollama                    # Local LLM server
     
-    # Universal code analysis
-    ast-grep                 # Multi-language AST search
-    
-    # API tools
-    curl                     # HTTP requests
+    # API and data tools
     jq                       # JSON processing
+    yq                       # YAML processing
   ];
 
-  # Python environment with AI extensions (to replace base Python)
+  # Python environment with AI extensions
   pythonWithAIExtensions = pythonWithAI;
 
   # Environment variables for AI development
@@ -54,37 +63,49 @@ in {
     OLLAMA_HOST = "127.0.0.1:11434";
     
     # Development paths (using centralized config)
-    AI_WORKSPACE_DIR = "${homeDirectory}/${aiConfig.workspace}";
-    AI_CONFIG_PATH = "${homeDirectory}/${aiConfig.configDir}";
+    AI_WORKSPACE = "${homeDirectory}/${aiConfig.workspace}";
+    AI_CONFIG_DIR = "${homeDirectory}/${aiConfig.configDir}";
+    
+    # OpenCode integration
+    OPENCODE_MODEL_PROVIDER = "ollama";
+    OPENCODE_MODEL_NAME = aiConfig.model or "llama3.1:8b";
   };
 
-  # Simple aliases for AI development (using centralized config)
+  # Enhanced aliases for AI development with OpenCode integration
   aiAliases = {
+    # OpenCode integration
+    "opencode-ai" = "cd $AI_WORKSPACE && opencode --model ollama/${aiConfig.model or "llama3.1:8b"}";
+    "oc" = "opencode";
+    "oc-ai" = "opencode --model ollama/${aiConfig.model or "llama3.1:8b"}";
+    
     # Core AI tools
     "ai" = "cd $AI_WORKSPACE && python ai.py";
-    "ai-setup" = "$AI_WORKSPACE/setup.sh";
+    "ai-setup" = "bash ${homeDirectory}/.config/nixpkgs/scripts/ai-workspace-setup.sh";
     
     # Ollama management
     "llm-start" = "ollama serve";
     "llm-stop" = "pkill -f 'ollama serve'";
     "llm-models" = "ollama list";
     "llm-chat" = "ollama run";
+    "llm-status" = "curl -s http://127.0.0.1:11434/api/tags | jq .";
     
     # Model management
     "llm-pull" = "ollama pull";
     "llm-rm" = "ollama rm";
     "llm-show" = "ollama show";
     
-    # Code analysis (language agnostic)
+    # Code analysis with AI assistant
     "analyze" = "cd $AI_WORKSPACE && python ai.py analyze";
     "review" = "cd $AI_WORKSPACE && python ai.py review";
     "generate" = "cd $AI_WORKSPACE && python ai.py generate";
+    "chat" = "cd $AI_WORKSPACE && python ai.py chat";
     
-    # Test LLM connection
-    "llm-test" = "curl -s http://127.0.0.1:11434/api/tags | jq .";
+    # Workspace shortcuts
+    "ai-workspace" = "cd $AI_WORKSPACE";
+    "ai-config" = "cd $AI_CONFIG_DIR";
   };
 
-  # Session paths for AI tools (using centralized config)
+  # Session paths for AI tools
   aiSessionPath = [
     "${homeDirectory}/${aiConfig.workspace}/bin"
   ];
