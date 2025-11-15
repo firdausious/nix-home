@@ -19,9 +19,9 @@ let
     pyyaml
     toml
     
-    # Vector databases and embeddings
-    chromadb
-    sentence-transformers
+    # Vector databases and embeddings (commented out due to compatibility issues)
+    # chromadb
+    # sentence-transformers
     
     # Machine learning libraries
     scikit-learn

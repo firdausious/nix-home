@@ -53,9 +53,6 @@ let
 
   # JetBrains IDEs - using unstable for latest versions
   jetbrainsIDEs = with pkgs-unstable.jetbrains; [
-    # JetBrains Fleet - Universal IDE
-    fleet
-    
     # Database IDE
     datagrip
     
@@ -73,15 +70,11 @@ let
     # rust-rover            # RustRover
   ];
 
-  # Android development tools
-  androidTools = with pkgs; [
-    # Android Studio
-    android-studio
-    
-    # Android SDK and tools will be managed by Android Studio
-    # But we can also install standalone tools
-    # android-tools  # adb, fastboot, etc. (if you want system-wide access)
-  ];
+  # Android development tools - commented out due to architecture issues
+  # androidTools = with pkgs; [
+  #   # Android Studio
+  #   android-studio
+  # ];
 
   # Language runtimes and tools
   languagePackages = with pkgs; [
@@ -123,7 +116,6 @@ let
 
     # Other programming tools
     opencode
-    moon
     protobuf
     postgresql
   ];
@@ -163,7 +155,7 @@ let
 
 in {
   # All development packages
-  devPackages = jetbrainsIDEs ++ androidTools ++ languagePackages ++ devUtilities;
+  devPackages = jetbrainsIDEs ++ languagePackages ++ devUtilities;
   
   # Export base Python packages for extension by other modules
   inherit basePythonPackages;
@@ -178,21 +170,6 @@ in {
 
   # Environment variables for development tools
   devSessionVariables = {
-    # Go development
-    GOPATH = "${homeDirectory}/go";
-    GOBIN = "${homeDirectory}/go/bin";
-    
-    # Android development
-    ANDROID_HOME = "${homeDirectory}/Library/Android/sdk";
-    ANDROID_SDK_ROOT = "${homeDirectory}/Library/Android/sdk";
-    ANDROID_AVD_HOME = "${homeDirectory}/.android/avd";
-    
-    # Java development (for Android Studio and JetBrains IDEs)
-    JAVA_HOME = "${pkgs.zulu}/lib/openjdk";
-    
-    # Flutter development (if you use Flutter)
-    # FLUTTER_ROOT = "${homeDirectory}/development/flutter";
-    
     # JetBrains IDEs settings
     JETBRAINS_SETTINGS = "${homeDirectory}/.config/JetBrains";
   };
