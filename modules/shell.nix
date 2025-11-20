@@ -78,7 +78,7 @@
     settings = {
       # Theme and appearance
       theme = "catppuccin-mocha";
-      background-opacity = 0.95;
+      background-opacity = 0.80;
       window-padding-x = 8;
       window-padding-y = 8;
       window-decoration = false;

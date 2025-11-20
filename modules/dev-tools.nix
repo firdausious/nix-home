@@ -54,7 +54,7 @@ let
   # JetBrains IDEs - using unstable for latest versions
   jetbrainsIDEs = with pkgs-unstable.jetbrains; [
     # Database IDE
-    datagrip
+    # datagrip
     
     # Other JetBrains IDEs (commented out - uncomment as needed)
     # idea-ultimate      # IntelliJ IDEA Ultimate
@@ -74,6 +74,7 @@ let
   # androidTools = with pkgs; [
   #   # Android Studio
   #   android-studio
+  #   scrcpy
   # ];
 
   # Language runtimes and tools
@@ -117,34 +118,41 @@ let
     # Other programming tools
     opencode
     protobuf
-    postgresql
   ];
 
   # Development tools and utilities
   devUtilities = with pkgs; [
     # Version control and project management
-    gh                    # GitHub CLI
-    gitlab-runner        # GitLab CI runner
+    # gh                    # GitHub CLI
+    # gitlab-runner        # GitLab CI runner
     
     # Database tools
-    mysql80              # MySQL client
-    sqlite              # SQLite
+    # mysql80              # MySQL client
+    # sqlite              # SQLite
     redis               # Redis client
+    postgresql          # PostgreSQL client
     
     # Container and virtualization
-    docker              # Docker CLI
-    docker-compose      # Docker Compose
+    podman              # Podman CLI
+    podman-compose      # Podman Compose
     
     # API development and testing
-    postman            # API testing (if available)
-    insomnia           # API client
+    # postman            # API testing (if available)
+    # insomnia           # API client
     
-    # Text editors and utilities
-    vim                # Vim editor
+
     
-    # System monitoring and debugging
-    htop              # Process monitor
-    btop              # Better top
+
+    
+    # CI/CD tools
+    act                # GitHub Actions local runner
+    
+    # Testing tools
+    k6                 # Load testing
+    
+    # Additional dev tools
+    direnv             # Directory-based environment
+    just               # Command runner
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     # macOS specific tools
     # Add macOS-specific development tools here
@@ -153,9 +161,30 @@ let
     strace            # System call tracer
   ];
 
+  # Development tools (editors, etc.)
+  devPackages = with pkgs; [
+    nixfmt-classic
+    lazygit
+    neovim
+    tmux
+    asdf-vm
+  ];
+
+  # Infrastructure and cloud tools
+  infraPackages = with pkgs; [
+    dive
+    trivy
+    railway
+    azure-cli
+    awscli2
+    (google-cloud-sdk.withExtraComponents [
+      google-cloud-sdk.components.gke-gcloud-auth-plugin
+    ])
+  ];
+
 in {
   # All development packages
-  devPackages = jetbrainsIDEs ++ languagePackages ++ devUtilities;
+  devPackages = jetbrainsIDEs ++ languagePackages ++ devUtilities ++ devPackages ++ infraPackages;
   
   # Export base Python packages for extension by other modules
   inherit basePythonPackages;
@@ -172,6 +201,9 @@ in {
   devSessionVariables = {
     # JetBrains IDEs settings
     JETBRAINS_SETTINGS = "${homeDirectory}/.config/JetBrains";
+    
+    # Enable direnv
+    DIRENV_LOG_FORMAT = "";
   };
 
   # Development-related aliases
@@ -183,16 +215,16 @@ in {
     "emulator" = "${homeDirectory}/Library/Android/sdk/emulator/emulator";
     
     # JetBrains IDEs shortcuts
-    "fleet" = "fleet";
-    "datagrip" = "datagrip";
+    # "fleet" = "fleet";
+    # "datagrip" = "datagrip";
     # "idea" = "idea-ultimate";
     # "pycharm" = "pycharm-professional";
     # "webstorm" = "webstorm";
     
     # Development utilities
-    "docker-clean" = "docker system prune -af && docker volume prune -f";
-    "docker-stop-all" = "docker stop $(docker ps -q)";
-    "docker-rm-all" = "docker rm $(docker ps -aq)";
+    "docker-clean" = "podman system prune -af && podman volume prune -f";
+    "docker-stop-all" = "podman stop $(podman ps -q)";
+    "docker-rm-all" = "podman rm $(podman ps -aq)";
     
     # Database connections (examples)
     "db-local" = "psql postgresql://localhost:5432/mydb";

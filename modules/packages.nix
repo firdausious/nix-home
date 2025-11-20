@@ -24,32 +24,10 @@ let
     yazi
   ];
 
-  # Development tools (editors, etc.)
-  devPackages = with pkgs; [
-    nixfmt-classic
-    lazygit
-    neovim
-    tmux
-    asdf-vm
-  ];
-
-  # Infrastructure and cloud tools
-  infraPackages = with pkgs; [
-    dive
-    trivy
-    railway
-    azure-cli
-    awscli2
-    (google-cloud-sdk.withExtraComponents [
-      google-cloud-sdk.components.gke-gcloud-auth-plugin
-    ])
-  ];
-
   # Media tools
   mediaPackages = with pkgs; [
     imagemagick
     librsvg
-    scrcpy
   ];
 
   # Platform-specific packages
@@ -62,6 +40,5 @@ let
   ];
 
 in {
-  packages = corePackages ++ devPackages ++ infraPackages ++ 
-             mediaPackages ++ darwinPackages ++ linuxPackages;
+  packages = corePackages ++ mediaPackages ++ darwinPackages ++ linuxPackages;
 }

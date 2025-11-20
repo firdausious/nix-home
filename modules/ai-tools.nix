@@ -11,12 +11,9 @@ let
     langchain-anthropic
     
     # HTTP and API support
-    requests
     httpx
     
     # Data processing and utilities
-    python-dotenv
-    pyyaml
     toml
     
     # Vector databases and embeddings (commented out due to compatibility issues)
@@ -25,8 +22,6 @@ let
     
     # Machine learning libraries
     scikit-learn
-    numpy
-    pandas
     
     # Development and analysis tools
     jupyter
@@ -37,7 +32,6 @@ let
     
     # File system utilities
     pathspec
-    gitpython
   ]);
 
   # Python environment with AI extensions
@@ -50,7 +44,6 @@ in {
     ollama                    # Local LLM server
     
     # API and data tools
-    jq                       # JSON processing
     yq                       # YAML processing
   ];
 
