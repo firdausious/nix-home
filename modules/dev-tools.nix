@@ -79,9 +79,6 @@ let
 
   # Language runtimes and tools
   languagePackages = with pkgs; [
-    # Python - Common backend development environment
-    (python313.withPackages basePythonPackages)
-
     # Ruby
     bundix
     (hiPrio bundler)
@@ -168,6 +165,7 @@ let
     neovim
     tmux
     asdf-vm
+    # ghostty
   ];
 
   # Infrastructure and cloud tools

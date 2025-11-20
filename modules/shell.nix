@@ -79,15 +79,19 @@
       # Theme and appearance
       theme = "catppuccin-mocha";
       background-opacity = 0.80;
+      background-blur = true;
       window-padding-x = 8;
       window-padding-y = 8;
       window-decoration = false;
       window-inherit-font-size = true;
       
       # Font configuration
-      font-family = "JetBrains Mono";
-      font-size = 14;
-      font-weight = 500;
+      # font-family = "JetBrains Mono";
+      # font-size = 14;
+      font-family = "psudoFont Liga Mono";
+      font-size = 13;
+      font-style = "Regular";
+      font-feature = "calt,liga";
       
       # Cursor and selection
       cursor-style = "block";

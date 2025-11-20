@@ -34,8 +34,8 @@ let
     pathspec
   ]);
 
-  # Python environment with AI extensions
-  pythonWithAI = pkgs.python313.withPackages aiPythonPackages;
+  # Python environment with AI extensions (extends base dev environment)
+  pythonWithAI = pkgs.python313.withPackages (ps: (basePythonPackages ps) ++ (aiPythonPackages ps));
 
 in {
   # AI/ML packages - focused on essential tools

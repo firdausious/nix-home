@@ -80,7 +80,7 @@
                   go = devToolsConfig.go;
                   zsh = (import ./modules/shell.nix { inherit pkgs defaults system username; }).zsh;
                   fzf = (import ./modules/shell.nix { inherit pkgs defaults system username; }).fzf;
-                  ghostty = (import ./modules/shell.nix { inherit pkgs defaults system username; }).ghostty;
+                  # ghostty = (import ./modules/shell.nix { inherit pkgs defaults system username; }).ghostty;
                   home-manager.enable = true;
                 };
 

@@ -24,6 +24,7 @@
   
   # Infrastructure tools  
   opencode = pkgs-unstable.opencode;
+  # ghostty = pkgs-unstable.ghostty;
   moon = pkgs-unstable.moon;
   railway = pkgs-unstable.railway;
   azure-cli = pkgs-unstable.azure-cli;
