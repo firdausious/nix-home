@@ -25,6 +25,13 @@
     syntaxHighlighting.enable = true;
     autocd = true;
     
+    initContent = ''
+      # Oh-My-Posh prompt with catppuccin theme
+      if command -v oh-my-posh >/dev/null 2>&1; then
+        eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/catppuccin_mocha.omp.json)"
+      fi
+    '';
+    
     oh-my-zsh = {
       enable = true;
       plugins = [
@@ -77,8 +84,8 @@
     enable = true;
     settings = {
       # Theme and appearance
-      theme = "catppuccin-mocha";
-      background-opacity = 0.80;
+      theme = "~/.config/ghostty/themes/catppuccin-mocha";
+      background-opacity = 0.85;
       background-blur = true;
       window-padding-x = 8;
       window-padding-y = 8;
@@ -86,8 +93,6 @@
       window-inherit-font-size = true;
       
       # Font configuration
-      # font-family = "JetBrains Mono";
-      # font-size = 14;
       font-family = "psudoFont Liga Mono";
       font-size = 13;
       font-style = "Regular";
@@ -122,25 +127,9 @@
       gpu-acceleration = true;
       scrollback-limit = 10000;
       
-      # Colors (Catppuccin Mocha theme colors)
-      background = "#1e1e2e";
-      foreground = "#cdd6f4";
-      color0 = "#45475a";   # black
-      color1 = "#f38ba8";   # red
-      color2 = "#a6e3a1";   # green
-      color3 = "#f9e2af";   # yellow
-      color4 = "#89b4fa";   # blue
-      color5 = "#f5c2e7";   # magenta
-      color6 = "#94e2d5";   # cyan
-      color7 = "#bac2de";   # white
-      color8 = "#585b70";   # bright black
-      color9 = "#eba0ac";   # bright red
-      color10 = "#a6e3a1";  # bright green
-      color11 = "#f2cdcd";  # bright yellow
-      color12 = "#89b4fa";  # bright blue
-      color13 = "#f5c2e7";  # bright magenta
-      color14 = "#94e2d5";  # bright cyan
-      color15 = "#a6adc8";  # bright white
+      # Enhanced transparency for TUI apps like OpenCode
+      adjust-cell-width = true;
+      adjust-cell-height = true;
     };
   };
 }

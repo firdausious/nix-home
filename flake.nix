@@ -76,13 +76,38 @@
                                aiToolsConfig.aiSessionPath;
                 };
 
-                programs = {
-                  go = devToolsConfig.go;
-                  zsh = (import ./modules/shell.nix { inherit pkgs defaults system username; }).zsh;
-                  fzf = (import ./modules/shell.nix { inherit pkgs defaults system username; }).fzf;
-                  # ghostty = (import ./modules/shell.nix { inherit pkgs defaults system username; }).ghostty;
-                  home-manager.enable = true;
-                };
+                  programs = {
+                    go = devToolsConfig.go;
+                    zsh = (import ./modules/shell.nix { inherit pkgs defaults system username; }).zsh;
+                    fzf = (import ./modules/shell.nix { inherit pkgs defaults system username; }).fzf;
+                    # ghostty = (import ./modules/shell.nix { inherit pkgs defaults system username; }).ghostty;
+                    home-manager.enable = true;
+                  };
+
+                  # Copy theme and font files
+                  home.file = {
+                    # Ghostty theme
+                    ".config/ghostty/themes/catppuccin-mocha.conf".source = ./themes/catppuccin/ghostty/catppuccin-mocha.conf;
+                    
+                    # OpenCode theme configuration
+                    ".config/opencode/catppuccin-mocha.conf".text = ''
+                      # OpenCode Configuration with Catppuccin Theme
+                      export OPENCODE_THEME="catppuccin-mocha"
+                      export OPENCODE_BACKGROUND_TRANSPARENCY="0.8"
+                      export OPENCODE_BLUR="true"
+                      export OPENCODE_MODEL_PROVIDER="ollama"
+                      export OPENCODE_MODEL_NAME="llama3.1:8b"
+                    '';
+                    
+                    # Oh-My-Posh theme
+                    ".config/oh-my-posh/catppuccin_mocha.omp.json".source = ./themes/oh-my-posh/catppuccin_mocha.omp.json;
+                    
+                    # Custom fonts
+                    ".local/share/fonts/psudoFont_Liga_Mono-Regular.ttf".source = ./themes/psudoFont_Liga_Mono/psudoFont_Liga_Mono_-_Regular.ttf;
+                    ".local/share/fonts/psudoFont_Liga_Mono-Bold.ttf".source = ./themes/psudoFont_Liga_Mono/psudoFont_Liga_Mono_-_Bold.ttf;
+                    ".local/share/fonts/psudoFont_Liga_Mono-Italic.ttf".source = ./themes/psudoFont_Liga_Mono/psudoFont_Liga_Mono_-_Italic.ttf;
+                    ".local/share/fonts/psudoFont_Liga_Mono-BoldItalic.ttf".source = ./themes/psudoFont_Liga_Mono/psudoFont_Liga_Mono_-_BoldItalic.ttf;
+                  };
 
                 # Activation scripts
                 home.activation.rustup = home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''

@@ -22,6 +22,7 @@ let
     wget
     xclip
     yazi
+    oh-my-posh
   ];
 
   # Media tools

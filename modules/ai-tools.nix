@@ -62,14 +62,24 @@ in {
     # OpenCode integration
     OPENCODE_MODEL_PROVIDER = "ollama";
     OPENCODE_MODEL_NAME = aiConfig.model or "llama3.1:8b";
+    
+    # Terminal appearance for OpenCode (catppuccin theme support)
+    OPENCODE_THEME = "catppuccin-mocha";
+    OPENCODE_BACKGROUND_TRANSPARENCY = "0.8";
+    OPENCODE_BLUR = "true";
+    
+    # Source OpenCode theme configuration
+    OPENCODE_CONFIG_DIR = "${homeDirectory}/.config/opencode";
   };
 
   # Enhanced aliases for AI development with OpenCode integration
   aiAliases = {
-    # OpenCode integration
-    "opencode-ai" = "cd $AI_WORKSPACE && opencode --model ollama/${aiConfig.model or "llama3.1:8b"}";
-    "oc" = "opencode";
-    "oc-ai" = "opencode --model ollama/${aiConfig.model or "llama3.1:8b"}";
+    # OpenCode integration with catppuccin theme
+    "opencode-ai" = "cd $AI_WORKSPACE && source ~/.config/opencode/catppuccin-mocha.conf && opencode --model ollama/${aiConfig.model or "llama3.1:8b"}";
+    "oc" = "source ~/.config/opencode/catppuccin-mocha.conf && opencode";
+    "oc-ai" = "source ~/.config/opencode/catppuccin-mocha.conf && opencode --model ollama/${aiConfig.model or "llama3.1:8b"}";
+    "oc-theme" = "source ~/.config/opencode/catppuccin-mocha.conf && opencode --theme catppuccin-mocha";
+    "oc-transparent" = "source ~/.config/opencode/catppuccin-mocha.conf && OPENCODE_BACKGROUND_TRANSPARENCY=0.8 OPENCODE_BLUR=true opencode";
     
     # Core AI tools
     "ai" = "cd $AI_WORKSPACE && python ai.py";
