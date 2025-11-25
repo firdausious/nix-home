@@ -13,6 +13,7 @@ let
     gdu
     gnupg
     jq
+    httpie
     luarocks
     neofetch
     ripgrep

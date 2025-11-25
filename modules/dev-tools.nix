@@ -119,6 +119,7 @@ let
 
   # Development tools and utilities
   devUtilities = with pkgs; [
+    moon
     # Version control and project management
     # gh                    # GitHub CLI
     # gitlab-runner        # GitLab CI runner
