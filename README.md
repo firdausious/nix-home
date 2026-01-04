@@ -2,8 +2,6 @@
 
 This repository contains a modular and reusable Nix configuration for managing my user environment with home-manager.
 
-nix flake update nixpkgs-unstable --extra-experimental-features nix-command --extra-experimental-features flakes
-
 ## 🏗️ Unified Configuration Architecture
 
 This setup uses a **single folder/repo approach** that consolidates all Nix and Home Manager configurations without symlinks:
@@ -43,10 +41,13 @@ git clone https://github.com/firdausious/nixpkgs.git ~/.config/nixpkgs
 cd ~/.config/nixpkgs
 ```
 
-3. Enable experimental features (already configured in nix.conf)
-```
-# The nix.conf file in this repo automatically enables:
-# experimental-features = nix-command flakes
+3. Configure Nix to use experimental features
+```bash
+# Copy nix.conf to proper Nix configuration directory
+mkdir -p ~/.config/nix
+cp ~/.config/nixpkgs/nix.conf ~/.config/nix/nix.conf
+
+# The nix.conf enables: experimental-features = nix-command flakes
 ```
 
 ## 🚀 Quick Update Workflow
@@ -59,23 +60,33 @@ cd ~/.config/nixpkgs
 
 That's it! The `hm-switch` command builds and activates your configuration in one step.
 
+> **Note:** Shell aliases (`hm-switch`, `hm-build`, etc.) work after you restart your shell or run `source ~/.zshrc`. If they don't work immediately, use the full command: `home-manager switch --flake ~/.config/nixpkgs#firdaus`
+
 ### **Recommended Commands**
 
 ```bash
 # Primary workflow - build + activate configuration
 hm-switch          # Apply configuration changes immediately
+# Fallback (if aliases don't work): home-manager switch --flake ~/.config/nixpkgs#firdaus
 
 # Optional - test before applying
 hm-build           # Build without applying (for testing)
+# Fallback: home-manager build --flake ~/.config/nixpkgs#firdaus
 
 # Check for errors
 flake-check        # Validate configuration syntax
+# Fallback: nix flake check
 
 # Update flake inputs (if needed)
 flakeup           # Update Nix flake dependencies
+# Fallback: nix flake update
 
 # Check Home Manager news
 hm-news            # See what's new in Home Manager
+# Fallback: home-manager news --flake ~/.config/nixpkgs
+
+# Example: Update flake inputs when you want newer package versions
+flakeup            # Update all flake inputs (nixpkgs, nixpkgs-unstable, home-manager, etc.)
 ```
 
 ## 🔧 Advanced Usage
@@ -106,6 +117,7 @@ nix run .#homeConfigurations.firdaus.activationPackage
 
 ```bash
 # Direct home-manager command (equivalent to hm-switch)
+# Use this if shell aliases don't work after initial setup
 home-manager switch --flake ~/.config/nixpkgs#firdaus
 ```
 
@@ -159,7 +171,7 @@ This configuration includes a simple, language-agnostic AI assistant for code de
 
 ### Quick Start
 
-1. **Apply Nix Configuration** (using any method above)
+1. **Apply Nix Configuration** (use `hm-switch` after completing Quick Start)
 
 2. **Run AI Setup Script**:
    ```bash
@@ -270,7 +282,7 @@ Then change the provider in config.json to "openai" or "anthropic".
 
 The AI assistant automatically detects and works with:
 
-- **Languanges**: Python, Go, Rust, PHP, Ruby, Java, C#, C, C++, Shell scripts, JavaScript, TypeScript, HTML, CSS
+ - **Languages**: Python, Go, Rust, PHP, Ruby, Java, C#, C, C++, Shell scripts, JavaScript, TypeScript, HTML, CSS
 - **Config**: JSON, YAML, XML, SQL
 - **Docs**: Markdown
 
@@ -328,5 +340,5 @@ To adapt this setup for another user:
 
 4. **Apply the configuration**:
    ```bash
-   nix --extra-experimental-features "nix-command flakes" run .#homeConfigurations.[new-username].activationPackage
+    nix run .#homeConfigurations.[new-username].activationPackage
    ```
