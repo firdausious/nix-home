@@ -23,6 +23,7 @@ return {
       bashls = false, -- Bash Language Server
       graphql = false, -- GraphQL Language Server
       lemminx = false, -- XML Language Server
+      marksman = false, -- Markdown Language Server
       -- Add any other language servers here to disable them
     },
     features = {

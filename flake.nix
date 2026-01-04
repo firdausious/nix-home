@@ -2,16 +2,16 @@
   description = "Modular and reusable Nix configuration";
 
   inputs = {
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
   outputs = { self, home-manager, nixpkgs, nixpkgs-unstable, utils, ... }@inputs:
     let
-      releaseVersion = "25.05";
+      releaseVersion = "25.11";
       
       # Support multiple systems
       forAllSystems = utils.lib.genAttrs utils.lib.defaultSystems;
@@ -108,6 +108,10 @@
                     ".local/share/fonts/psudoFont_Liga_Mono-Italic.ttf".source = ./themes/psudoFont_Liga_Mono/psudoFont_Liga_Mono_-_Italic.ttf;
                     ".local/share/fonts/psudoFont_Liga_Mono-BoldItalic.ttf".source = ./themes/psudoFont_Liga_Mono/psudoFont_Liga_Mono_-_BoldItalic.ttf;
                   };
+
+                  # Force overwrite for Go configuration files
+                  xdg.configFile."go/env".force = true;
+                  home.file."Library/Application Support/go/env".force = true;
 
                 # Activation scripts
                 home.activation.rustup = home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''

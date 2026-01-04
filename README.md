@@ -49,87 +49,96 @@ cd ~/.config/nixpkgs
 # experimental-features = nix-command flakes
 ```
 
-## ✅ Complete Build & Usage Guide
+## 🚀 Quick Update Workflow
 
-### **Building & Testing**
+**When you want to add/update packages or modify your configuration:**
 
-Before applying any changes, it's a good practice to build and check the configuration to catch any errors.
+1. **Edit configuration files** (modify `flake.nix`, `modules/packages.nix`, etc.)
+2. **Apply changes:** `hm-switch`
+3. **Done!** 🎉
 
-1.  **Build/test the configuration:**
+That's it! The `hm-switch` command builds and activates your configuration in one step.
 
-    ```bash
-    nix --extra-experimental-features nix-command --extra-experimental-features flakes build .#homeConfigurations.firdaus.activationPackage
-    ```
-
-2.  **Check for errors:**
-
-    ```bash
-    nix --extra-experimental-features nix-command --extra-experimental-features flakes flake check
-    ```
-
-### **Applying the Configuration**
-
-Once you've verified the configuration, you can apply it using one of these methods:
-
-**Method 1: Build and Activate (Recommended)**
-
-3a. **Build the configuration:**
-
-    ```bash
-    nix --extra-experimental-features "nix-command flakes" build .#homeConfigurations.firdaus.activationPackage
-    ```
-
-3b. **Activate the built configuration:**
-
-    ```bash
-    ./result/activate
-    ```
-
-**Method 2: Direct Run**
-
-3.  **Apply the configuration directly (activates it):**
-
-    ```bash
-    nix --extra-experimental-features nix-command --extra-experimental-features flakes run .#homeConfigurations.firdaus.activationPackage
-    ```
-
-### **Alternative Method (using home-manager CLI)**
-
-If you have `home-manager` installed as a standalone tool, you can also use its CLI to switch to the new configuration.
+### **Recommended Commands**
 
 ```bash
-home-manager switch --flake .#firdaus
+# Primary workflow - build + activate configuration
+hm-switch          # Apply configuration changes immediately
+
+# Optional - test before applying
+hm-build           # Build without applying (for testing)
+
+# Check for errors
+flake-check        # Validate configuration syntax
+
+# Update flake inputs (if needed)
+flakeup           # Update Nix flake dependencies
+
+# Check Home Manager news
+hm-news            # See what's new in Home Manager
 ```
 
-### **Making Changes**
+## 🔧 Advanced Usage
 
-When you want to modify your configuration:
+For users who need more control or troubleshooting, here are the manual methods:
 
-1.  Edit files in the `modules/` directory or add new user configurations.
-2.  Build to test your changes: `nix --extra-experimental-features "nix-command flakes" build .#homeConfigurations.firdaus.activationPackage`
-3.  Apply the new configuration: `./result/activate`
-
-### **Convenience Aliases (Built-in)**
-
-This configuration automatically provides convenient aliases through the shell module (`modules/shell.nix`):
+### **Manual Build & Testing**
 
 ```bash
-# Home Manager aliases (unified directory approach)
-hm-switch          # Switch to new configuration
+# Build configuration
+nix build .#homeConfigurations.firdaus.activationPackage
+
+# Check for errors
+nix flake check
+
+# Activate built configuration
+./result/activate
+```
+
+### **Direct Run Method**
+
+```bash
+# Build and activate in one step (manual version of hm-switch)
+nix run .#homeConfigurations.firdaus.activationPackage
+```
+
+### **Home Manager CLI**
+
+```bash
+# Direct home-manager command (equivalent to hm-switch)
+home-manager switch --flake ~/.config/nixpkgs#firdaus
+```
+
+> **Note:** Experimental features (`nix-command` and `flakes`) are already enabled in your `nix.conf`, so you don't need the `--extra-experimental-features` flags.
+
+### **All Available Aliases**
+
+This configuration provides convenient aliases through the shell module (`modules/shell.nix`):
+
+#### **🎯 Primary Commands (Recommended)**
+
+```bash
+hm-switch          # Switch to new configuration (build + activate)
 hm-build           # Build configuration without applying
 hm-news            # Check Home Manager news
+```
 
-# Nix flake management
+#### **📦 Package Management**
+
+```bash
 flakeup           # Update flake inputs
 flake-show        # Show flake outputs
 flake-check       # Check flake for errors
+```
 
-# Build and activate (legacy aliases)
-nxb               # Build configuration
+#### **🔧 Legacy Commands (Still Available)**
+
+```bash
+nxb               # Build configuration (equivalent to hm-build)
 nxa               # Activate built configuration
 ```
 
-After applying the configuration, you can simply run `hm-switch` to apply future changes without any setup needed.
+> **Pro tip:** Use `hm-switch` for your daily workflow. The other commands are helpful for testing, debugging, or when you need more granular control over the build process.
 
 ---
 

@@ -81,7 +81,7 @@ let
   languagePackages = with pkgs; [
     # Ruby
     bundix
-    (hiPrio bundler)
+    (lib.hiPrio bundler)
     ruby
     fastlane
 
@@ -166,6 +166,7 @@ let
     neovim
     tmux
     asdf-vm
+    helix
     # ghostty
   ];
 
@@ -192,8 +193,10 @@ in {
   go = {
     enable = true;
     package = pkgs.go;
-    goPath = "${homeDirectory}/go";
-    goBin = "${homeDirectory}/go/bin";
+    env = {
+      goPath = "${homeDirectory}/go";
+      goBin = "${homeDirectory}/go/bin";
+    };
   };
 
   # Environment variables for development tools
