@@ -36,27 +36,11 @@
       fi
       # End Nix
 
-      # Set ZSH variable for oh-my-zsh
-      export ZSH="${pkgs.oh-my-zsh}/share/oh-my-zsh"
-
       # Oh-My-Posh prompt with catppuccin theme
       if command -v oh-my-posh >/dev/null 2>&1; then
         eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/catppuccin_mocha.omp.json)"
       fi
     '';
-
-    oh-my-zsh = {
-      enable = true;
-      plugins = [
-        "git"
-        "dotenv"
-        "jsontools"
-        "web-search"
-        "colored-man-pages"
-        "copypath"
-        "copyfile"
-      ];
-    };
 
     plugins = [
       {
