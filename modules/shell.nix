@@ -5,14 +5,18 @@
   shellAliases = {
     # Nix flake management
     flakeup = "nix flake update ${defaults.nixConfigDirectory} --update-input";
-    nxb = "nix build ${defaults.nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${defaults.nixConfigDirectory}/result --extra-experimental-features nix-command --extra-experimental-features flakes";
-    nxa = "${defaults.nixConfigDirectory}/result/activate switch --flake ${defaults.nixConfigDirectory}/#homeConfigurations.${system}.${username}";
-    
+    nxb =
+      "nix build ${defaults.nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${defaults.nixConfigDirectory}/result --extra-experimental-features nix-command --extra-experimental-features flakes";
+    nxa =
+      "${defaults.nixConfigDirectory}/result/activate switch --flake ${defaults.nixConfigDirectory}/#homeConfigurations.${system}.${username}";
+
     # Home Manager with explicit flake path (unified directory approach)
-    hm-switch = "home-manager switch --flake ${defaults.nixConfigDirectory}#${username}";
-    hm-build = "home-manager build --flake ${defaults.nixConfigDirectory}#${username}";
+    hm-switch =
+      "home-manager switch --flake ${defaults.nixConfigDirectory}#${username}";
+    hm-build =
+      "home-manager build --flake ${defaults.nixConfigDirectory}#${username}";
     hm-news = "home-manager news --flake ${defaults.nixConfigDirectory}";
-    
+
     # Nix flake shortcuts
     flake-show = "cd ${defaults.nixConfigDirectory} && nix flake show";
     flake-check = "cd ${defaults.nixConfigDirectory} && nix flake check";
@@ -24,14 +28,23 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     autocd = true;
-    
+
     initContent = ''
+      # Nix
+      if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+      fi
+      # End Nix
+
+      # Set ZSH variable for oh-my-zsh
+      export ZSH="${pkgs.oh-my-zsh}/share/oh-my-zsh"
+
       # Oh-My-Posh prompt with catppuccin theme
       if command -v oh-my-posh >/dev/null 2>&1; then
         eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/catppuccin_mocha.omp.json)"
       fi
     '';
-    
+
     oh-my-zsh = {
       enable = true;
       plugins = [
@@ -40,12 +53,11 @@
         "jsontools"
         "web-search"
         "colored-man-pages"
-        "common-aliases"
         "copypath"
         "copyfile"
       ];
     };
-    
+
     plugins = [
       {
         name = "zsh-nix-shell";
@@ -72,11 +84,10 @@
   # FZF configuration
   fzf = {
     enable = true;
-    defaultCommand = "fd --type f --hidden --follow --exclude node_modules --exclude .git --exclude Pods";
-    defaultOptions = [
-      "--ansi"
-      "--preview-window 'right:60%' --preview 'bat'"
-    ];
+    defaultCommand =
+      "fd --type f --hidden --follow --exclude node_modules --exclude .git --exclude Pods";
+    defaultOptions =
+      [ "--ansi" "--preview-window 'right:60%' --preview 'bat'" ];
   };
 
   # Ghostty terminal configuration
@@ -91,24 +102,24 @@
       window-padding-y = 8;
       window-decoration = false;
       window-inherit-font-size = true;
-      
+
       # Font configuration
       font-family = "psudoFont Liga Mono";
       font-size = 13;
       font-style = "Regular";
       font-feature = "calt,liga";
-      
+
       # Cursor and selection
       cursor-style = "block";
       cursor-color = "#f5c2e7";
       cursor-invert-fg-bg = true;
       selection-background = "#89b4fa";
       selection-foreground = "#1e1e2e";
-      
+
       # Shell integration
       shell-integration = "zsh";
       confirm-close-surface = false;
-      
+
       # Key bindings
       keybind = [
         "ctrl+shift+c=copy_to_clipboard"
@@ -121,12 +132,12 @@
         "ctrl+minus=decrease_font_size"
         "ctrl+0=reset_font_size"
       ];
-      
+
       # Performance and behavior
       resize-delay = 0;
       gpu-acceleration = true;
       scrollback-limit = 10000;
-      
+
       # Enhanced transparency for TUI apps like OpenCode
       adjust-cell-width = true;
       adjust-cell-height = true;
