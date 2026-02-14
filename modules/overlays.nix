@@ -23,7 +23,8 @@
   # Infrastructure tools  
   opencode = pkgs-unstable.opencode;
   # ghostty = pkgs-unstable.ghostty;
-  moon = pkgs-unstable.moon;
+  # moon = pkgs-unstable.moon;
+  minio-client = pkgs-unstable.minio-client;
   railway = pkgs-unstable.railway;
   azure-cli = pkgs-unstable.azure-cli;
   awscli2 = pkgs-unstable.awscli2;

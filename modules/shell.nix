@@ -3,6 +3,168 @@
 {
   # Shell aliases
   shellAliases = {
+    # ls aliases from common-aliases
+    l = "ls -lFh";
+    la = "ls -lAFh";
+    lr = "ls -tRFh";
+    lt = "ls -ltFh";
+    ll = "ls -l";
+    ldot = "ls -ld .*";
+    lS = "ls -1FSsh";
+    lart = "ls -1Fcart";
+    lrt = "ls -1Fcrt";
+    lsr = "ls -lARFh";
+    lsn = "ls -1";
+
+    # Editor and grep
+    grep = "grep --color";
+    sgrep = "grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} ";
+
+    # System tools
+    t = "tail -f";
+    dud = "du -d 1 -h";
+    ff = "find . -type f -name";
+    h = "history";
+    hgrep = "fc -El 0 | grep";
+    help = "man";
+    p = "ps -f";
+    sortnr = "sort -n -r";
+    unexport = "unset";
+
+    # Safe file operations
+    rm = "rm -i";
+    cp = "cp -i";
+    mv = "mv -i";
+
+    # Git aliases from oh-my-zsh
+    g = "git";
+    ga = "git add";
+    gaa = "git add --all";
+    gapa = "git add --patch";
+    gau = "git add --update";
+    gav = "git add --verbose";
+    gap = "git apply";
+    gb = "git branch";
+    gba = "git branch -a";
+    gbd = "git branch -d";
+    gbD = "git branch -D";
+    gbl = "git blame -b -w";
+    gbnm = "git branch --no-merged";
+    gbr = "git branch --remote";
+    gc = "git commit -v";
+    gcamend = "git commit -v --amend";
+    gcamendne = "git commit -v --no-edit --amend";
+    gca = "git commit -v -a";
+    gcaamend = "git commit -v -a --amend";
+    gcam = "git commit -a -m";
+    gcb = "git checkout -b";
+    gcf = "git config --list";
+    gcl = "git clone --recurse-submodules";
+    gclean = "git clean -id";
+    gpristine = "git reset --hard && git clean -dffx";
+    gcm = "git checkout main";
+    gco = "git checkout";
+    gcount = "git shortlog -sn";
+    gcp = "git cherry-pick";
+    gcs = "git commit -S";
+    gd = "git diff";
+    gdca = "git diff --cached";
+    gds = "git diff --staged";
+    gdt = "git diff-tree --no-commit-id --name-only -r";
+    gdw = "git diff --word-diff";
+    gf = "git fetch";
+    gfa = "git fetch --all --prune";
+    gfo = "git fetch origin";
+    ggl = "git pull origin";
+    ggp = "git push origin";
+    ggpnp = "ggl && ggp";
+    ggpull = ''git pull origin "$(git_current_branch)"'';
+    ggpush = ''git push origin "$(git_current_branch)"'';
+    ggsup = ''git branch --set-upstream-to=origin/"$(git_current_branch)"'';
+    ghh = "git help";
+    gignore = "git update-index --assume-unchanged";
+    gignored = ''git ls-files -v | grep "^[[:lower:]]"'';
+    gk = "gitk --all --branches";
+    gke = "gitk --all $(git log -g --pretty=%h)";
+    gl = "git pull";
+    glg = "git log --stat";
+    glgp = "git log --stat -p";
+    glgg = "git log --graph";
+    glgga = "git log --graph --decorate --all";
+    glgm = "git log --graph --max-count=10";
+    glo = "git log --oneline --decorate";
+    glol =
+      "git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset'";
+    glola =
+      "git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset' --all";
+    glog = "git log --oneline --decorate --graph";
+    gloga = "git log --oneline --decorate --graph --all";
+    gm = "git merge";
+    gma = "git merge --abort";
+    gmtl = "git mergetool --no-prompt";
+    gp = "git push";
+    gpd = "git push --dry-run";
+    gpf = "git push --force-with-lease";
+    gpfforce = "git push --force";
+    gpoat = "git push origin --all && git push origin --tags";
+    gpr = "git pull --rebase";
+    gpu = "git push upstream";
+    gpv = "git push -v";
+    gr = "git remote";
+    gra = "git remote add";
+    grb = "git rebase";
+    grba = "git rebase --abort";
+    grbc = "git rebase --continue";
+    grbd = "git rebase develop";
+    grbi = "git rebase -i";
+    grbm = "git rebase main";
+    grbs = "git rebase --skip";
+    grev = "git revert";
+    grh = "git reset";
+    grhh = "git reset --hard";
+    grm = "git rm";
+    grmc = "git rm --cached";
+    grmv = "git remote rename";
+    grrm = "git remote remove";
+    grs = "git restore";
+    grset = "git remote set-url";
+    grss = "git restore --source";
+    grst = "git restore --staged";
+    grt = ''cd "$(git rev-parse --show-toplevel || echo .)"'';
+    gru = "git reset --";
+    grup = "git remote update";
+    grv = "git remote -v";
+    gsb = "git status -sb";
+    gsd = "git svn dcommit";
+    gsh = "git show";
+    gsi = "git submodule init";
+    gsp = "git show --pretty=short --show-signature";
+    gsr = "git svn rebase";
+    gss = "git status -s";
+    gst = "git status";
+    gsta = "git stash push";
+    gstaa = "git stash apply";
+    gstd = "git stash drop";
+    gstl = "git stash list";
+    gstp = "git stash pop";
+    gsts = "git stash show --text";
+    gsu = "git submodule update";
+    gsw = "git switch";
+    gswc = "git switch -c";
+    gswm = "git switch main";
+    gts = "git tag -s";
+    gtv = "git tag | sort -V";
+    gunignore = "git update-index --no-assume-unchanged";
+    gunwip = ''
+      git rev-list --max-count=1 --format="%s" HEAD | grep -q "\\--wip--" && git reset HEAD~1'';
+    gwch = "git whatchanged -p --abbrev-commit --pretty=medium";
+    gwip = ''
+      git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify --no-gpg-sign -m "--wip-- [skip ci]"'';
+    gam = "git am";
+    gamc = "git am --continue";
+    gams = "git am --skip";
+    gama = "git am --abort";
+
     # Nix flake management
     flakeup = "nix flake update ${defaults.nixConfigDirectory} --update-input";
     nxb =
@@ -35,6 +197,11 @@
         . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
       fi
       # End Nix
+
+      # Git helper functions
+      git_current_branch() {
+        git symbolic-ref --short HEAD 2>/dev/null
+      }
 
       # Oh-My-Posh prompt with catppuccin theme
       if command -v oh-my-posh >/dev/null 2>&1; then

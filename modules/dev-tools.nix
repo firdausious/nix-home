@@ -119,7 +119,7 @@ let
 
   # Development tools and utilities
   devUtilities = with pkgs; [
-    moon
+    # moon
     # Version control and project management
     # gh                    # GitHub CLI
     # gitlab-runner        # GitLab CI runner
@@ -180,6 +180,7 @@ let
     (google-cloud-sdk.withExtraComponents [
       google-cloud-sdk.components.gke-gcloud-auth-plugin
     ])
+    minio-client
   ];
 
 in {
