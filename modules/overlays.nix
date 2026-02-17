@@ -15,6 +15,7 @@
   # Java
   maven = pkgs-unstable.maven;
   gradle = pkgs-unstable.gradle;
+  zulu25 = pkgs-unstable.zulu25;
 
   # Node.js ecosystem
   nodejs_24 = pkgs-unstable.nodejs_24;

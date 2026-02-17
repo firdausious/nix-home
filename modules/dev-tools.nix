@@ -86,7 +86,7 @@ let
     fastlane
 
     # Java
-    zulu
+    zulu25
     gradle
     maven
 
