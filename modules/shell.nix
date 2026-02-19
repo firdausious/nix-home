@@ -167,7 +167,8 @@
 
     # Nix flake management
     flakeup = "nix flake update ${defaults.nixConfigDirectory} --update-input";
-    nc = "nix flake update nixpkgs-unstable --extra-experimental-features nix-command --extra-experimental-features flakes";
+    ncache = "nix flake update nixpkgs-unstable --extra-experimental-features nix-command --extra-experimental-features flakes";
+    nclean = "nix-collect-garbage --delete-older-than 7d";
     nxb =
       "nix build ${defaults.nixConfigDirectory}/#homeConfigurations.${system}.${username}.activationPackage -o ${defaults.nixConfigDirectory}/result --extra-experimental-features nix-command --extra-experimental-features flakes";
     nxa =
