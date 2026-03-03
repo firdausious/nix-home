@@ -1,0 +1,18 @@
+{
+  "version": 3,
+  "endpoints": [
+    {
+      "endpoint": "/hello",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/world",
+          "encoding": "json",
+          "method": "GET",
+          "host": ["https://jsonplaceholder.typicode.com"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,435 @@
+# command: docker-compose -f platforms/nix-infra.yml -p nix-infra up -d
+services:
+  postgres-1:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    ports:
+      - 54321:5432
+    restart: on-failure:3
+
+  postgres-bri:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    ports:
+      - 54322:5432
+    restart: on-failure:3
+
+  postgres-all:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    ports:
+      - 54323:5432
+    restart: on-failure:3
+
+  mysql-1:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - 33061:3306
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  mongo-1:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27011:27017
+    volumes:
+      - mongo-data:/var/lib/mongodb/data
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--username", "root", "--password", "password", "--eval", "db.adminCommand('ping').ok"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  redis-1:
+    image: redis:alpine
+    command: redis-server
+    volumes:
+      - redis:/var/lib/redis
+      - redis-config:/usr/local/etc/redis/redis.conf
+    ports:
+      - 63791:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    environment:
+      - http_proxy
+      - https_proxy
+      - MEILI_MASTER_KEY=root-password
+      - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-true}
+      - MEILI_ENV=${MEILI_ENV:-development}
+      - MEILI_LOG_LEVEL
+      - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
+    ports:
+      - ${MEILI_PORT:-7700}:7700
+    volumes:
+      - ./data.ms:/data.ms
+    restart: unless-stopped
+
+  nats:
+    image: nats:latest
+    restart: unless-stopped
+    ports:
+      - "8093:4222"     # client connections (most important)
+      - "8094:8222"     # monitoring / web UI (very useful)
+    command: >
+      --jetstream
+      --http_port 8222
+    volumes:
+      - nats-jetstream-data:/data/jetstream
+    environment:
+      - TZ=Asia/Jakarta   # optional — match your location
+
+  nats-nui:
+    image: ghcr.io/nats-nui/nui:latest
+    restart: unless-stopped
+    ports:
+      - "8095:31311"           # main web UI port – feel free to change left side
+    volumes:
+      - nats-nui-db:/db         # persists connections, settings, etc.
+    environment:
+      NUI_NATS_URL: "nats://nats:8093"
+    depends_on:
+      - nats                      # start after NATS is up
+
+  rabbitmq-1:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  # pulsar-1:
+  #   image: apachepulsar/pulsar:latest
+  #   command: bin/pulsar standalone
+  #   hostname: pulsar
+  #   ports:
+  #     - "8081:8080"
+  #     - "6650:6650"
+  #   restart: unless-stopped
+  #   volumes:
+  #     - "./data/:/pulsar/data"
+  #
+  # pulsar-ui:
+  #   image: apachepulsar/pulsar-manager:latest
+  #   ports:
+  #     - "9527:9527"
+  #     - "7750:7750"
+  #   depends_on:
+  #     - pulsar-1
+  #   links:
+  #     - pulsar-1
+  #   environment:
+  #     SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
+
+  dbgate:
+    image: dbgate/dbgate:7.1.2
+    restart: always
+    ports:
+      - 8091:3000
+    volumes:
+      - dbgate-data:/root/.dbgate
+    environment:
+      CONNECTIONS: con1,con2,con3,con4,con5,con6
+
+      LABEL_con1: mysql-1
+      SERVER_con1: mysql-1
+      USER_con1: root
+      PASSWORD_con1: password
+      PORT_con1: 3306
+      ENGINE_con1: mysql@dbgate-plugin-mysql
+
+      LABEL_con2: postgres-1
+      SERVER_con2: postgres-1
+      USER_con2: root
+      PASSWORD_con2: password
+      PORT_con2: 5432
+      ENGINE_con2: postgres@dbgate-plugin-postgres
+
+      LABEL_con3: mongo-1
+      URL_con3: mongodb://root:password@mongo-1:27017/
+      ENGINE_con3: mongo@dbgate-plugin-mongo
+
+      LABEL_con4: redis-1
+      URL_con4: redis://redis-1:6379/
+      ENGINE_con4: redis@dbgate-plugin-redis
+
+      LABEL_con5: postgres-bri
+      SERVER_con5: postgres-bri
+      USER_con5: root
+      PASSWORD_con5: password
+      PORT_con5: 5432
+      ENGINE_con5: postgres@dbgate-plugin-postgres
+
+      LABEL_con6: postgres-all
+      SERVER_con6: postgres-all
+      USER_con6: root
+      PASSWORD_con6: password
+      PORT_con6: 5432
+      ENGINE_con6: postgres@dbgate-plugin-postgres
+
+  krakend:
+    image: devopsfaith/krakend
+    ports:
+      - "8092:8080"
+    volumes:
+      - ./data/krakend.json:/etc/krakend/krakend.json
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    ports:
+      - "8098:9000"
+      - "8099:9001"
+    environment:
+      MINIO_ROOT_USER: "root"
+      MINIO_ROOT_PASSWORD: "password"
+    volumes:
+      - $HOME/minio/data:/data
+    command: server --console-address ":9001" /data
+
+  logto:
+    image: svhd/logto:latest
+    depends_on:
+      - postgres-1
+    entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
+    ports:
+      - 8071:3001
+      - 8072:3002
+    environment:
+      - TRUST_PROXY_HEADER=1
+      - DB_URL=postgres://root:password@postgres-1:5432/logto
+      # - PORT=3001           # Logto Core internal port
+      # - ADMIN_PORT=3002     # Logto Admin internal port
+      # - ENDPOINT=http://localhost:8071
+      # - ADMIN_ENDPOINT=http://localhost:8072
+
+  novu-api:
+    image: ghcr.io/novuhq/novu/api:3.14.0
+    restart: unless-stopped
+    ports:
+      - "8073:3000"
+    depends_on:
+      mongo-1:
+        condition: service_healthy
+      redis-1:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/v1/health-check || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      API_ROOT_URL: http://localhost:8073
+      FRONT_BASE_URL: http://localhost:8075
+      WEB_ROOT_URL: http://localhost:8075
+      WS_URL: ws://localhost:8074
+      CORS_ORIGIN: "http://localhost:8075"
+
+      MONGO_URL: mongodb://root:password@mongo-1:27017/novu?authSource=admin
+      MONGO_MIN_POOL_SIZE: 5
+      MONGO_MAX_POOL_SIZE: 10
+      MONGO_AUTO_CREATE_INDEXES: "true"
+
+      REDIS_HOST: redis-1
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_DB_INDEX: 2
+      REDIS_CACHE_SERVICE_HOST: ""
+      REDIS_CACHE_SERVICE_PORT: 6379
+
+      S3_LOCAL_STACK: http://minio:9000
+      S3_BUCKET_NAME: novu-uploads
+      S3_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: root
+      AWS_SECRET_ACCESS_KEY: password
+      AWS_ENDPOINT: http://minio:9000
+      AWS_FORCE_PATH_STYLE: "true"
+
+      JWT_SECRET: replace-with-very-long-random-secret-64-chars-min-please-1234567890abcdef
+      STORE_ENCRYPTION_KEY: 4a7b9c2d1e3f5g6h8i9j0k1l2m3n4o5p
+      NOVU_SECRET_KEY: ZGVmYWJjaGVkZmlnaGlsaW5lZGVmYWJjaGVkZmlnaGlsaW5lZGVmYWJjaGVkZmlnaGxp
+      SUBSCRIBER_WIDGET_JWT_EXPIRATION_TIME: 15d
+
+      IS_API_IDEMPOTENCY_ENABLED: "false"
+      IS_API_RATE_LIMITING_ENABLED: "false"
+      IS_NEW_MESSAGES_API_RESPONSE_ENABLED: "true"
+      IS_V2_ENABLED: "true"
+
+      SENTRY_DSN: ""
+      NEW_RELIC_ENABLED: "false"
+      NEW_RELIC_APP_NAME: ""
+      NEW_RELIC_LICENSE_KEY: ""
+      DISABLE_ANALYTICS: "true"
+
+      MAIL_HOST: localhost
+      MAIL_PORT: 1025
+      MAIL_ENCRYPTION: ""
+      MAIL_USER: novu
+      MAIL_PASS: novu
+      MAIL_FROM: novu@localhost
+
+  novu-web:
+    image: ghcr.io/novuhq/novu/dashboard:3.14.0
+    restart: unless-stopped
+    ports:
+      - "8075:4000"
+    depends_on:
+      novu-api:
+        condition: service_healthy
+      novu-worker:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD-SHELL", 'node -e "const http = require(''http''); const req = http.get({hostname: ''localhost'', port: 4000, path: ''/'', timeout: 5000}, (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }); req.on(''error'', () => process.exit(1)); req.on(''timeout'', () => { req.destroy(); process.exit(1); });"']
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    environment:
+      VITE_API_HOSTNAME: http://localhost:8073
+      VITE_SELF_HOSTED: "true"
+      VITE_WEBSOCKET_HOSTNAME: ws://localhost:8074
+      VITE_LEGACY_DASHBOARD_URL: ""
+      NOVU_SECRET_KEY: ZGVmYWJjaGVkZmlnaGlsaW5lZGVmYWJjaGVkZmlnaGlsaW5lZGVmYWJjaGVkZmlnaGxp
+      API_ROOT_URL: http://localhost:8073
+
+  novu-worker:
+    image: ghcr.io/novuhq/novu/worker:3.14.0
+    restart: unless-stopped
+    depends_on:
+      mongo-1:
+        condition: service_healthy
+      redis-1:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3004/v1/health-check || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    environment:
+      NODE_ENV: production
+      PORT: 3004
+      MONGO_URL: mongodb://root:password@mongo-1:27017/novu?authSource=admin
+      MONGO_MIN_POOL_SIZE: 5
+      MONGO_MAX_POOL_SIZE: 10
+      REDIS_HOST: redis-1
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_DB_INDEX: 2
+      REDIS_CACHE_SERVICE_HOST: ""
+      REDIS_CACHE_SERVICE_PORT: 6379
+      S3_LOCAL_STACK: http://minio:9000
+      S3_BUCKET_NAME: novu-uploads
+      S3_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: root
+      AWS_SECRET_ACCESS_KEY: password
+      STORE_ENCRYPTION_KEY: 4a7b9c2d1e3f5g6h8i9j0k1l2m3n4o5p
+      JWT_SECRET: replace-with-very-long-random-secret-64-chars-min-please-1234567890abcdef
+      NOVU_SECRET_KEY: ZGVmYWJjaGVkZmlnaGlsaW5lZGVmYWJjaGVkZmlnaGlsaW5lZGVmYWJjaGVkZmlnaGxp
+      SUBSCRIBER_WIDGET_JWT_EXPIRATION_TIME: 15d
+      API_ROOT_URL: http://novu-api:3000
+      IS_EMAIL_INLINE_CSS_DISABLED: "false"
+      IS_USE_MERGED_DIGEST_ID_ENABLED: "false"
+      BROADCAST_QUEUE_CHUNK_SIZE: 100
+      MULTICAST_QUEUE_CHUNK_SIZE: 100
+      SENTRY_DSN: ""
+      NEW_RELIC_ENABLED: "false"
+      NEW_RELIC_APP_NAME: ""
+      NEW_RELIC_LICENSE_KEY: ""
+      DISABLE_ANALYTICS: "true"
+
+  novu-ws:
+    image: ghcr.io/novuhq/novu/ws:3.14.0
+    restart: unless-stopped
+    ports:
+      - "8074:3002"
+    depends_on:
+      mongo-1:
+        condition: service_healthy
+      redis-1:
+        condition: service_healthy
+      novu-api:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3002/v1/health-check || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      MONGO_URL: mongodb://root:password@mongo-1:27017/novu?authSource=admin
+      MONGO_MIN_POOL_SIZE: 5
+      MONGO_MAX_POOL_SIZE: 10
+      REDIS_HOST: redis-1
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      JWT_SECRET: replace-with-very-long-random-secret-64-chars-min-please-1234567890abcdef
+      STORE_ENCRYPTION_KEY: 4a7b9c2d1e3f5g6h8i9j0k1l2m3n4o5p
+      NOVU_SECRET_KEY: ZGVmYWJjaGVkZmlnaGlsaW5lZGVmYWJjaGVkZmlnaGlsaW5lZGVmYWJjaGVkZmlnaGxp
+      WS_URL: ws://localhost:8074
+      API_ROOT_URL: http://novu-api:3000
+      WS_CONTEXT_PATH: ""
+      SENTRY_DSN: ""
+      NEW_RELIC_ENABLED: "false"
+      NEW_RELIC_APP_NAME: ""
+      NEW_RELIC_LICENSE_KEY: ""
+
+volumes:
+  rabbitmq-data:
+  redis:
+  redis-config:
+  mongo-data:
+  mysql-data:
+  dbgate-data:
+    driver: local
+  nats-jetstream-data:
+  nats-nui-db:
