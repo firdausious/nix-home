@@ -68,7 +68,7 @@ services:
       retries: 5
 
   meilisearch:
-    image: getmeili/meilisearch:latest
+    image: getmeili/meilisearch:v1.37.0
     environment:
       - http_proxy
       - https_proxy
@@ -76,11 +76,11 @@ services:
       - MEILI_NO_ANALYTICS=${MEILI_NO_ANALYTICS:-true}
       - MEILI_ENV=${MEILI_ENV:-development}
       - MEILI_LOG_LEVEL
-      - MEILI_DB_PATH=${MEILI_DB_PATH:-/data.ms}
+      - MEILI_DB_PATH=/meili_data
     ports:
       - ${MEILI_PORT:-7700}:7700
     volumes:
-      - ./data.ms:/data.ms
+      - ./meili_data:/meili_data
     restart: unless-stopped
 
   nats:
@@ -210,20 +210,29 @@ services:
     command: server --console-address ":9001" /data
 
   logto:
-    image: svhd/logto:latest
+    image: svhd/logto:1.37.1
     depends_on:
       - postgres-1
+      - redis-1
     entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
     ports:
       - 8071:3001
-      - 8072:3002
+      - 8072:8072
     environment:
-      - TRUST_PROXY_HEADER=1
       - DB_URL=postgres://root:password@postgres-1:5432/logto
-      # - PORT=3001           # Logto Core internal port
-      # - ADMIN_PORT=3002     # Logto Admin internal port
-      # - ENDPOINT=http://localhost:8071
-      # - ADMIN_ENDPOINT=http://localhost:8072
+      - PORT=3001
+      - ADMIN_PORT=8072
+      - ENDPOINT=http://localhost:8071
+      - ADMIN_ENDPOINT=http://localhost:8072
+      - TRUST_PROXY_HEADER=1
+      - REDIS_URL=redis://redis-1:6379
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s   # Give extra time for initial seeding/startup
 
   novu-api:
     image: ghcr.io/novuhq/novu/api:3.14.0

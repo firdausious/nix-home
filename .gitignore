@@ -1,2 +1,4 @@
 result
 platforms/data.ms
+platforms/meili_data/*
+!platforms/meili_data/.gitkeep
