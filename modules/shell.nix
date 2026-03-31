@@ -177,9 +177,9 @@
 
     # Home Manager with explicit flake path (unified directory approach)
     hm-switch =
-      "home-manager switch --flake ${defaults.nixConfigDirectory}#${username}";
+      "home-manager switch --flake ${defaults.nixConfigDirectory}#${username} --extra-experimental-features nix-command --extra-experimental-features flakes";
     hm-build =
-      "home-manager build --flake ${defaults.nixConfigDirectory}#${username}";
+      "home-manager build --flake ${defaults.nixConfigDirectory}#${username} --extra-experimental-features nix-command --extra-experimental-features flakes";
     hm-news = "home-manager news --flake ${defaults.nixConfigDirectory}";
 
     # Nix flake shortcuts
