@@ -432,6 +432,18 @@ services:
       NEW_RELIC_APP_NAME: ""
       NEW_RELIC_LICENSE_KEY: ""
 
+  docuseal:
+    image: docuseal/docuseal:latest
+    restart: unless-stopped
+    ports:
+      - "8076:3000"
+    depends_on:
+      - postgres-1
+    environment:
+      DATABASE_URL: postgres://root:password@postgres-1:5432/docuseal
+    volumes:
+      - docuseal-data:/data
+
 volumes:
   rabbitmq-data:
   redis:
@@ -442,3 +454,4 @@ volumes:
     driver: local
   nats-jetstream-data:
   nats-nui-db:
+  docuseal-data:
