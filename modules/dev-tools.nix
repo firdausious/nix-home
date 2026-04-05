@@ -2,73 +2,75 @@
 
 let
   # Base Python packages for backend development
-  basePythonPackages = ps: with ps; [
-    # Core Python development tools
-    pip
-    virtualenv
-    setuptools
-    wheel
-    
-    # Code quality and formatting
-    black
-    isort
-    flake8
-    pylint
-    mypy
-    autopep8
-    
-    # Testing
-    pytest
-    pytest-cov
-    pytest-asyncio
-    
-    # Common development libraries
-    requests
-    pydantic
-    python-dotenv
-    rich
-    typer
-    click
-    
-    # Data handling
-    numpy
-    pandas
-    
-    # Web development
-    fastapi
-    uvicorn
-    aiohttp
-    
-    # Database
-    psycopg2
-    sqlalchemy
-    
-    # Utilities
-    pyyaml
-    gitpython
-    
-    # Legacy/specific packages
-    scapy
-  ];
+  basePythonPackages = ps:
+    with ps; [
+      # Core Python development tools
+      pip
+      virtualenv
+      setuptools
+      wheel
+
+      # Code quality and formatting
+      black
+      isort
+      flake8
+      pylint
+      mypy
+      autopep8
+
+      # Testing
+      pytest
+      pytest-cov
+      pytest-asyncio
+
+      # Common development libraries
+      requests
+      pydantic
+      python-dotenv
+      rich
+      typer
+      click
+
+      # Data handling
+      numpy
+      pandas
+
+      # Web development
+      fastapi
+      uvicorn
+      aiohttp
+
+      # Database
+      psycopg2
+      sqlalchemy
+
+      # Utilities
+      pyyaml
+      gitpython
+
+      # Legacy/specific packages
+      scapy
+    ];
 
   # JetBrains IDEs - using unstable for latest versions
-  jetbrainsIDEs = with pkgs-unstable.jetbrains; [
-    # Database IDE
-    # datagrip
-    
-    # Other JetBrains IDEs (commented out - uncomment as needed)
-    # idea-ultimate      # IntelliJ IDEA Ultimate
-    # idea-community     # IntelliJ IDEA Community
-    # pycharm-professional  # PyCharm Professional  
-    # pycharm-community     # PyCharm Community
-    # webstorm              # WebStorm
-    # phpstorm              # PhpStorm
-    # rubymine              # RubyMine
-    # clion                 # CLion
-    # rider                 # Rider (.NET)
-    # goland                # GoLand
-    # rust-rover            # RustRover
-  ];
+  jetbrainsIDEs = with pkgs-unstable.jetbrains;
+    [
+      # Database IDE
+      # datagrip
+
+      # Other JetBrains IDEs (commented out - uncomment as needed)
+      # idea-ultimate      # IntelliJ IDEA Ultimate
+      # idea-community     # IntelliJ IDEA Community
+      # pycharm-professional  # PyCharm Professional  
+      # pycharm-community     # PyCharm Community
+      # webstorm              # WebStorm
+      # phpstorm              # PhpStorm
+      # rubymine              # RubyMine
+      # clion                 # CLion
+      # rider                 # Rider (.NET)
+      # goland                # GoLand
+      # rust-rover            # RustRover
+    ];
 
   # Android development tools - commented out due to architecture issues
   # androidTools = with pkgs; [
@@ -118,57 +120,47 @@ let
   ];
 
   # Development tools and utilities
-  devUtilities = with pkgs; [
-    # moon
-    # Version control and project management
-    # gh                    # GitHub CLI
-    # gitlab-runner        # GitLab CI runner
-    
-    # Database tools
-    # mysql80              # MySQL client
-    # sqlite              # SQLite
-    redis               # Redis client
-    postgresql          # PostgreSQL client
-    
-    # Container and virtualization
-    podman              # Podman CLI
-    podman-compose      # Podman Compose
-    
-    # API development and testing
-    # postman            # API testing (if available)
-    # insomnia           # API client
-    
+  devUtilities = with pkgs;
+    [
+      # moon
+      # Version control and project management
+      # gh                    # GitHub CLI
+      # gitlab-runner        # GitLab CI runner
 
-    
+      # Database tools
+      # mysql80              # MySQL client
+      # sqlite              # SQLite
+      redis # Redis client
+      postgresql # PostgreSQL client
 
-    
-    # CI/CD tools
-    act                # GitHub Actions local runner
-    
-    # Testing tools
-    k6                 # Load testing
-    
-    # Additional dev tools
-    direnv             # Directory-based environment
-    just               # Command runner
-  ] ++ lib.optionals pkgs.stdenv.isDarwin [
-    # macOS specific tools
-    # Add macOS-specific development tools here
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
-    # Linux specific tools
-    strace            # System call tracer
-  ];
+      # Container and virtualization
+      podman # Podman CLI
+      podman-compose # Podman Compose
+
+      # API development and testing
+      # postman            # API testing (if available)
+      # insomnia           # API client
+
+      # CI/CD tools
+      act # GitHub Actions local runner
+
+      # Testing tools
+      k6 # Load testing
+
+      # Additional dev tools
+      direnv # Directory-based environment
+      just # Command runner
+    ] ++ lib.optionals pkgs.stdenv.isDarwin [
+      # macOS specific tools
+      # Add macOS-specific development tools here
+    ] ++ lib.optionals pkgs.stdenv.isLinux [
+      # Linux specific tools
+      strace # System call tracer
+    ];
 
   # Development tools (editors, etc.)
-  devPackages = with pkgs; [
-    nixfmt-classic
-    lazygit
-    neovim
-    tmux
-    asdf-vm
-    helix
-    # ghostty
-  ];
+  devPackages = with pkgs;
+    [ nixfmt-classic lazygit tmux asdf-vm helix ] ++ [ pkgs-unstable.neovim ];
 
   # Infrastructure and cloud tools
   infraPackages = with pkgs; [
@@ -177,19 +169,19 @@ let
     railway
     azure-cli
     awscli2
-    (google-cloud-sdk.withExtraComponents [
-      google-cloud-sdk.components.gke-gcloud-auth-plugin
-    ])
+    (google-cloud-sdk.withExtraComponents
+      [ google-cloud-sdk.components.gke-gcloud-auth-plugin ])
     minio-client
   ];
 
 in {
   # All development packages
-  devPackages = jetbrainsIDEs ++ languagePackages ++ devUtilities ++ devPackages ++ infraPackages;
-  
+  devPackages = jetbrainsIDEs ++ languagePackages ++ devUtilities ++ devPackages
+    ++ infraPackages;
+
   # Export base Python packages for extension by other modules
   inherit basePythonPackages;
-  
+
   # Go configuration
   go = {
     enable = true;
@@ -204,7 +196,7 @@ in {
   devSessionVariables = {
     # JetBrains IDEs settings
     JETBRAINS_SETTINGS = "${homeDirectory}/.config/JetBrains";
-    
+
     # Enable direnv
     DIRENV_LOG_FORMAT = "";
   };
@@ -213,26 +205,28 @@ in {
   devAliases = {
     # Android development shortcuts
     "adb" = "${homeDirectory}/Library/Android/sdk/platform-tools/adb";
-    "avdmanager" = "${homeDirectory}/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager";
-    "sdkmanager" = "${homeDirectory}/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager";
+    "avdmanager" =
+      "${homeDirectory}/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager";
+    "sdkmanager" =
+      "${homeDirectory}/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager";
     "emulator" = "${homeDirectory}/Library/Android/sdk/emulator/emulator";
-    
+
     # JetBrains IDEs shortcuts
     # "fleet" = "fleet";
     # "datagrip" = "datagrip";
     # "idea" = "idea-ultimate";
     # "pycharm" = "pycharm-professional";
     # "webstorm" = "webstorm";
-    
+
     # Development utilities
     "docker-clean" = "podman system prune -af && podman volume prune -f";
     "docker-stop-all" = "podman stop $(podman ps -q)";
     "docker-rm-all" = "podman rm $(podman ps -aq)";
-    
+
     # Database connections (examples)
     "db-local" = "psql postgresql://localhost:5432/mydb";
     # "db-dev" = "psql postgresql://dev-server:5432/mydb";
-    
+
     # Git shortcuts
     "gst" = "git status";
     "gco" = "git checkout";
@@ -243,7 +237,7 @@ in {
     "gd" = "git diff";
     "gb" = "git branch";
     "glog" = "git log --oneline --graph --decorate --all";
-    
+
     # Project shortcuts
     "projects" = "cd ${homeDirectory}/projects";
     "dev" = "cd ${homeDirectory}/development";
@@ -253,17 +247,17 @@ in {
   devSessionPath = [
     # Go binaries
     "${homeDirectory}/go/bin"
-    
+
     # Android SDK tools
     "${homeDirectory}/Library/Android/sdk/platform-tools"
-    "${homeDirectory}/Library/Android/sdk/cmdline-tools/latest/bin" 
+    "${homeDirectory}/Library/Android/sdk/cmdline-tools/latest/bin"
     "${homeDirectory}/Library/Android/sdk/emulator"
     "${homeDirectory}/Library/Android/sdk/build-tools/34.0.0" # Update version as needed
-    
+
     # Local development binaries
     "${homeDirectory}/.local/bin"
     "${homeDirectory}/development/scripts"
-    
+
     # Flutter (if you install it manually)
     # "${homeDirectory}/development/flutter/bin"
   ];
@@ -277,19 +271,19 @@ in {
       mkdir -p ${homeDirectory}/.android/avd
       mkdir -p ${homeDirectory}/development
       mkdir -p ${homeDirectory}/projects
-      
+
       # Create Android SDK symlinks if Android Studio is installed
       if [ -d "/Applications/Android Studio.app" ]; then
         echo "Android Studio detected, SDK should be managed by Android Studio"
       fi
     '';
-    
+
     # Setup development directories
     dev-dirs = ''
       # Create common development directories
       mkdir -p ${homeDirectory}/development/{scripts,tools,workspace}
       mkdir -p ${homeDirectory}/projects/{personal,work,opensource}
-      
+
       # Create config directories for JetBrains IDEs
       mkdir -p ${homeDirectory}/.config/JetBrains
     '';

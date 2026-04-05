@@ -5,6 +5,7 @@ return {
     dependencies = "nvim-treesitter/nvim-treesitter",
     event = "User AstroFile",
     main = "rainbow-delimiters.setup",
+    submodules = false,
     opts = {
       condition = function(bufnr)
         local excluded_filetypes = {

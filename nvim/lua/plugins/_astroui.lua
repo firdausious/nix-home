@@ -5,6 +5,45 @@ return {
     ---@type AstroUIOpts
     opts = {
       colorscheme = "catppuccin",
+      highlights = {
+        init = function()
+          local get_hlgroup = require("astroui").get_hlgroup
+          local normal = get_hlgroup "Normal"
+          local fg = normal and normal.fg
+          return {
+            Normal = { bg = "NONE", fg = fg },
+            NormalNC = { bg = "NONE", fg = fg },
+            NormalFloat = { bg = "NONE", fg = fg },
+            FloatBorder = { bg = "NONE" },
+            SignColumn = { bg = "NONE" },
+            TabLine = { bg = "NONE" },
+            TabLineFill = { bg = "NONE" },
+            WinBar = { bg = "NONE" },
+            WinBarNC = { bg = "NONE" },
+            EndOfBuffer = { bg = "NONE" },
+            MsgArea = { bg = "NONE" },
+            NvimTreeNormal = { bg = "NONE" },
+            NvimTreeNormalNC = { bg = "NONE" },
+            NvimTreeEndOfBuffer = { bg = "NONE" },
+            NvimTreeWinSeparator = { bg = "NONE" },
+            NeoTreeNormal = { bg = "NONE" },
+            NeoTreeNormalNC = { bg = "NONE" },
+            NeoTreeEndOfBuffer = { bg = "NONE" },
+            NeoTreeWinSeparator = { bg = "NONE" },
+            TelescopeNormal = { bg = "NONE" },
+            TelescopeBorder = { bg = "NONE" },
+            TelescopePreviewNormal = { bg = "NONE" },
+            TelescopePreviewBorder = { bg = "NONE" },
+            TelescopePromptNormal = { bg = "NONE" },
+            TelescopePromptBorder = { bg = "NONE" },
+            TelescopeResultsNormal = { bg = "NONE" },
+            TelescopeResultsBorder = { bg = "NONE" },
+            NotifyBackground = { bg = "NONE" },
+            NoiceNormal = { bg = "NONE" },
+            NoiceBorder = { bg = "NONE" },
+          }
+        end,
+      },
       icons = {
         ActiveLSP = "",
         ActiveTS = " ",

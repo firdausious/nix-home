@@ -210,11 +210,12 @@ services:
     command: server --console-address ":9001" /data
 
   logto:
-    image: svhd/logto:1.37.1
+    image: svhd/logto:1.38.0
     depends_on:
       - postgres-1
       - redis-1
-    entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
+    # entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
+    entrypoint: ["sh", "-c", "npm run cli db alteration deploy 1.38.0 && npm start"]
     ports:
       - 8071:3001
       - 8072:8072

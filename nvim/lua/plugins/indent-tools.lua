@@ -3,8 +3,9 @@
 
 ---@type LazySpec
 return {
-  "arsham/indent-tools.nvim",
-  dependencies = { "arsham/arshlib.nvim" },
+  "nvimdev/indentmini.nvim",
   event = "User AstroFile",
-  config = function() require("indent-tools").config {} end,
+  opts = {
+    exclude = { "help", "alpha" },
+  },
 }
