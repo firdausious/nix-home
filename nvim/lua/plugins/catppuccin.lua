@@ -7,6 +7,7 @@ return {
     opts = {
       flavour = "mocha",
       transparent_background = true,
+      dim_inactive = { enabled = true, percentage = 0.15, type = "dark" },
       term_colors = true,
       compile_path = vim.fn.stdpath "cache" .. "/catppuccin",
       styles = {
