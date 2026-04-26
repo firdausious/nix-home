@@ -290,6 +290,17 @@ Language detection is automatic based on file extensions.
 
 ### Troubleshooting
 
+# fix linking after macos upgrade
+
+```
+# Nix
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+# End Nix
+```
+
+
 ```bash
 # Check if Ollama is running
 llm-test

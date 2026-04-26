@@ -128,7 +128,7 @@ let
       # gitlab-runner        # GitLab CI runner
 
       # Database tools
-      # mysql80              # MySQL client
+      mysql84              # MySQL client
       # sqlite              # SQLite
       redis # Redis client
       postgresql # PostgreSQL client

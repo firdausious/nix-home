@@ -9,23 +9,6 @@ services:
       - 54321:5432
     restart: on-failure:3
 
-  postgres-bri:
-    image: postgres:alpine
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-    ports:
-      - 54322:5432
-    restart: on-failure:3
-
-  postgres-all:
-    image: postgres:alpine
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
-    ports:
-      - 54323:5432
-    restart: on-failure:3
 
   mysql-1:
     image: mysql:latest
@@ -175,20 +158,6 @@ services:
       URL_con4: redis://redis-1:6379/
       ENGINE_con4: redis@dbgate-plugin-redis
 
-      LABEL_con5: postgres-bri
-      SERVER_con5: postgres-bri
-      USER_con5: root
-      PASSWORD_con5: password
-      PORT_con5: 5432
-      ENGINE_con5: postgres@dbgate-plugin-postgres
-
-      LABEL_con6: postgres-all
-      SERVER_con6: postgres-all
-      USER_con6: root
-      PASSWORD_con6: password
-      PORT_con6: 5432
-      ENGINE_con6: postgres@dbgate-plugin-postgres
-
   krakend:
     image: devopsfaith/krakend
     ports:
@@ -196,18 +165,17 @@ services:
     volumes:
       - ./data/krakend.json:/etc/krakend/krakend.json
 
-  minio:
-    image: minio/minio:latest
+  rustfs:
+    image: rustfs/rustfs:latest
     restart: unless-stopped
     ports:
       - "8098:9000"
       - "8099:9001"
     environment:
-      MINIO_ROOT_USER: "root"
-      MINIO_ROOT_PASSWORD: "password"
+      RUSTFS_ROOT_USER: "root"
+      RUSTFS_ROOT_PASSWORD: "password"
     volumes:
-      - $HOME/minio/data:/data
-    command: server --console-address ":9001" /data
+      - $HOME/rustfs/data:/data
 
   logto:
     image: svhd/logto:1.38.0
@@ -245,7 +213,7 @@ services:
         condition: service_healthy
       redis-1:
         condition: service_healthy
-      minio:
+      rustfs:
         condition: service_started
     logging:
       driver: "json-file"
@@ -279,12 +247,12 @@ services:
       REDIS_CACHE_SERVICE_HOST: ""
       REDIS_CACHE_SERVICE_PORT: 6379
 
-      S3_LOCAL_STACK: http://minio:9000
+      S3_LOCAL_STACK: http://rustfs:9000
       S3_BUCKET_NAME: novu-uploads
       S3_REGION: us-east-1
       AWS_ACCESS_KEY_ID: root
       AWS_SECRET_ACCESS_KEY: password
-      AWS_ENDPOINT: http://minio:9000
+      AWS_ENDPOINT: http://rustfs:9000
       AWS_FORCE_PATH_STYLE: "true"
 
       JWT_SECRET: replace-with-very-long-random-secret-64-chars-min-please-1234567890abcdef
@@ -370,7 +338,7 @@ services:
       REDIS_DB_INDEX: 2
       REDIS_CACHE_SERVICE_HOST: ""
       REDIS_CACHE_SERVICE_PORT: 6379
-      S3_LOCAL_STACK: http://minio:9000
+      S3_LOCAL_STACK: http://rustfs:9000
       S3_BUCKET_NAME: novu-uploads
       S3_REGION: us-east-1
       AWS_ACCESS_KEY_ID: root

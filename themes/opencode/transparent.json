@@ -29,15 +29,15 @@
       "dark": "#89dceb",
       "light": "#89dceb"
     },
-    "text": "none",
+    "text": "#cdd6f4",
     "textMuted": {
       "dark": "#6c7086",
       "light": "#6c7086"
     },
-    "background": "none",
-    "backgroundPanel": "none",
-    "backgroundElement": "none",
-    "backgroundMenu": "none",
+    "background": "transparent",
+    "backgroundPanel": "#1e1e2e80",
+    "backgroundElement": "#31324480",
+    "backgroundMenu": "#1e1e2ee0",
     "border": {
       "dark": "#585b70",
       "light": "#585b70"
@@ -75,7 +75,7 @@
     "markdownListEnumeration": "#f5c2e7",
     "markdownImage": "#89dceb",
     "markdownImageText": "#f5c2e7",
-    "markdownCodeBlock": "none",
+    "markdownCodeBlock": "#31324480",
     "syntaxComment": "#6c7086",
     "syntaxKeyword": "#cba6f7",
     "syntaxFunction": "#89b4fa",

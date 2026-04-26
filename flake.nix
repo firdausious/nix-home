@@ -108,6 +108,8 @@
               # OpenCode transparent theme
               ".config/opencode/themes/transparent.json".source =
                 ./themes/opencode/transparent.json;
+              ".config/opencode/catppuccin-mocha.conf".source =
+                ./themes/opencode/catppuccin-mocha.conf;
               ".config/opencode/tui.json".text = ''
                 {
                   "$schema": "https://opencode.ai/tui.json",
