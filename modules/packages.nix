@@ -24,6 +24,7 @@ let
     xclip
     yazi
     oh-my-posh
+    yt-dlp
   ];
 
   # Media tools

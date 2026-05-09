@@ -36,7 +36,7 @@ let
     ]);
 
   # Python environment with AI extensions (extends base dev environment)
-  pythonWithAI = pkgs.python313.withPackages
+  pythonWithAI = pkgs.python314.withPackages
     (ps: (basePythonPackages ps) ++ (aiPythonPackages ps));
 
 in {

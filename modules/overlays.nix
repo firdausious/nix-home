@@ -1,11 +1,44 @@
 { pkgs-unstable }:
 
-# Overlay to get latest versions from unstable channel
-(final: prev: {
+final: prev:
+
+{
+  # Use python314 from unstable, but disable PyAV's import check on Darwin.
+  # The package builds successfully and is then killed during the
+  # pythonImportsCheck phase after installation.
+  python314 = (pkgs-unstable.python314 or prev.python314).override {
+    packageOverrides = pyfinal: pyprev: {
+      av = pyprev.av.overridePythonAttrs (_: {
+        doCheck = false;
+        doInstallCheck = false;
+        pythonImportsCheck = [ ];
+        nativeCheckInputs = [ ];
+      });
+      imageio = pyprev.imageio.overridePythonAttrs (_: {
+        doCheck = false;
+        doInstallCheck = false;
+        pythonImportsCheck = [ ];
+        nativeCheckInputs = [ ];
+      });
+      scikit-image = pyprev.scikit-image.overridePythonAttrs (_: {
+        doCheck = false;
+        doInstallCheck = false;
+        pythonImportsCheck = [ ];
+        nativeCheckInputs = [ ];
+      });
+      plotly = pyprev.plotly.overridePythonAttrs (_: {
+        doCheck = false;
+        doInstallCheck = false;
+        pythonImportsCheck = [ ];
+        nativeCheckInputs = [ ];
+      });
+    };
+  };
+
   # Development tools
   neovim = pkgs-unstable.neovim;
   dbmate = pkgs-unstable.dbmate;
-  
+
   # Go
   go = pkgs-unstable.go;
 
@@ -20,8 +53,8 @@
   # Node.js ecosystem
   nodejs_24 = pkgs-unstable.nodejs_24;
   bun = pkgs-unstable.bun;
-  
-  # Infrastructure tools  
+
+  # Infrastructure tools
   opencode = pkgs-unstable.opencode;
   # ghostty = pkgs-unstable.ghostty;
   # moon = pkgs-unstable.moon;
@@ -29,4 +62,4 @@
   railway = pkgs-unstable.railway;
   azure-cli = pkgs-unstable.azure-cli;
   awscli2 = pkgs-unstable.awscli2;
-})
+}

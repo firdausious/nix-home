@@ -51,7 +51,7 @@ services:
       retries: 5
 
   meilisearch:
-    image: getmeili/meilisearch:v1.37.0
+    image: getmeili/meilisearch:v1.43.0
     environment:
       - http_proxy
       - https_proxy
@@ -127,7 +127,7 @@ services:
   #     SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
 
   dbgate:
-    image: dbgate/dbgate:7.1.2
+    image: dbgate/dbgate:7.1.11
     restart: always
     ports:
       - 8091:3000
@@ -178,12 +178,12 @@ services:
       - $HOME/rustfs/data:/data
 
   logto:
-    image: svhd/logto:1.38.0
+    image: svhd/logto:1.39.0
     depends_on:
       - postgres-1
       - redis-1
     # entrypoint: ["sh", "-c", "npm run cli db seed -- --swe && npm start"]
-    entrypoint: ["sh", "-c", "npm run cli db alteration deploy 1.38.0 && npm start"]
+    entrypoint: ["sh", "-c", "npm run cli db alteration deploy 1.39.0 && npm start"]
     ports:
       - 8071:3001
       - 8072:8072
@@ -204,7 +204,7 @@ services:
       start_period: 60s   # Give extra time for initial seeding/startup
 
   novu-api:
-    image: ghcr.io/novuhq/novu/api:3.14.0
+    image: ghcr.io/novuhq/novu/api:3.16.0
     restart: unless-stopped
     ports:
       - "8073:3000"
@@ -279,7 +279,7 @@ services:
       MAIL_FROM: novu@localhost
 
   novu-web:
-    image: ghcr.io/novuhq/novu/dashboard:3.14.0
+    image: ghcr.io/novuhq/novu/dashboard:3.16.0
     restart: unless-stopped
     ports:
       - "8075:4000"
@@ -308,7 +308,7 @@ services:
       API_ROOT_URL: http://localhost:8073
 
   novu-worker:
-    image: ghcr.io/novuhq/novu/worker:3.14.0
+    image: ghcr.io/novuhq/novu/worker:3.16.0
     restart: unless-stopped
     depends_on:
       mongo-1:
@@ -359,7 +359,7 @@ services:
       DISABLE_ANALYTICS: "true"
 
   novu-ws:
-    image: ghcr.io/novuhq/novu/ws:3.14.0
+    image: ghcr.io/novuhq/novu/ws:3.16.0
     restart: unless-stopped
     ports:
       - "8074:3002"
