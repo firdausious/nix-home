@@ -43,7 +43,10 @@ in {
   # AI/ML packages - focused on essential tools
   aiPackages = with pkgs; [
     # Core AI tools
+    claude-code # Anthropic Claude CLI
     ollama # Local LLM server
+    rtk # Token-optimized command proxy for AI agents
+    skills # Agent skill installer used by Caveman/OpenCode
 
     # API and data tools
     yq # YAML processing
@@ -92,6 +95,16 @@ in {
     "ai" = "cd $AI_WORKSPACE && python ai.py";
     "ai-setup" =
       "bash ${homeDirectory}/.config/nixpkgs/scripts/ai-workspace-setup.sh";
+    "ai-agent-setup" =
+      "bash ${homeDirectory}/.config/nixpkgs/scripts/setup-ai-agents.sh";
+    "ai-agent-status" =
+      "bash ${homeDirectory}/.config/nixpkgs/scripts/setup-ai-agents.sh --status";
+    "rtk-claude-setup" = "rtk init -g --auto-patch";
+    "rtk-opencode-setup" = "rtk init -g --opencode";
+    "caveman-claude-setup" =
+      "claude plugin marketplace add JuliusBrussee/caveman && claude plugin install caveman@caveman";
+    "caveman-opencode-setup" =
+      "skills add JuliusBrussee/caveman -a opencode";
 
     # Ollama management
     "llm-start" = "ollama serve";

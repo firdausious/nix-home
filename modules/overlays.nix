@@ -56,6 +56,9 @@ final: prev:
 
   # Infrastructure tools
   opencode = pkgs-unstable.opencode;
+  claude-code = pkgs-unstable.claude-code;
+  rtk = pkgs-unstable.rtk;
+  skills = pkgs-unstable.skills;
   # ghostty = pkgs-unstable.ghostty;
   # moon = pkgs-unstable.moon;
   minio-client = pkgs-unstable.minio-client;

@@ -131,7 +131,7 @@ let
       mysql84              # MySQL client
       # sqlite              # SQLite
       redis # Redis client
-      postgresql # PostgreSQL client
+      postgresql_18 # PostgreSQL client
 
       # Container and virtualization
       podman # Podman CLI

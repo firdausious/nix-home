@@ -29,19 +29,69 @@ This setup uses a **single folder/repo approach** that consolidates all Nix and 
 
 ## Quick Start
 
-1. Install Nix
-```
-sh <(curl -L https://nixos.org/nix/install)
-```
+Fresh machine setup:
 
-2. Pull Config
+1. **Install Nix**
+   ```bash
+   sh <(curl -L https://nixos.org/nix/install)
+   ```
+
+2. **Pull Config**
+   ```bash
+   git clone https://github.com/firdausious/nixpkgs.git ~/.config/nixpkgs
+   cd ~/.config/nixpkgs
+   ```
+
+3. **Enable Nix flakes**
+   ```bash
+   mkdir -p ~/.config/nix
+   cp ~/.config/nixpkgs/nix.conf ~/.config/nix/nix.conf
+   ```
+
+4. **Dry-run the Home Manager build**
+   ```bash
+   nix --extra-experimental-features 'nix-command flakes' build \
+     .#homeConfigurations.firdaus.activationPackage --dry-run
+   ```
+
+5. **Apply the Home Manager config**
+   ```bash
+   nix --extra-experimental-features 'nix-command flakes' run \
+     github:nix-community/home-manager/release-25.11 -- \
+     switch --flake ~/.config/nixpkgs#firdaus
+   ```
+
+6. **Restart your shell**
+
+   After this, aliases like `hm-switch`, `ai-setup`, and `ai-agent-setup` are available.
+
+7. **Set up AI workspace and agent integrations**
+   ```bash
+   ai-setup
+   ai-agent-setup
+   ai-agent-status
+   ```
+
+8. **Optional Neovim bootstrap**
+   ```bash
+   ~/.config/nixpkgs/nvim/setup.sh
+   ```
+
+   If replacing an existing Neovim setup:
+   ```bash
+   ~/.config/nixpkgs/nvim/setup.sh --force
+   ```
+
+### Manual Bootstrap Notes
+
+Pull config manually if needed:
 ```
 # Clone your forked repository
 git clone https://github.com/firdausious/nixpkgs.git ~/.config/nixpkgs
 cd ~/.config/nixpkgs
 ```
 
-3. Configure Nix to use experimental features
+Configure Nix to use experimental features manually if aliases are not available yet:
 ```bash
 # Copy nix.conf to proper Nix configuration directory
 mkdir -p ~/.config/nix
@@ -175,10 +225,16 @@ This configuration includes a simple, language-agnostic AI assistant for code de
 
 2. **Run AI Setup Script**:
    ```bash
-   ~/.config/nixpkgs/scripts/setup-agentic-dev.sh
+   ai-setup
    ```
 
-3. **Test the AI Assistant**:
+3. **Wire Claude Code and OpenCode** with RTK + Caveman:
+   ```bash
+   ai-agent-setup
+   ai-agent-status
+   ```
+
+4. **Test the AI Assistant**:
    ```bash
    ai chat "hello world"
    ```
@@ -212,10 +268,19 @@ aiConfig = {
 
 ```bash
 # AI Assistant
+ai-setup                  # Set up local AI workspace
+ai-agent-setup            # Wire Claude Code/OpenCode with RTK + Caveman
+ai-agent-status           # Show Claude/OpenCode/RTK/Caveman status
 ai review file.py         # Review code
 ai generate "web server"  # Generate code  
 ai analyze .              # Analyze project
 ai chat "help me debug"   # General chat
+
+# Claude Code / OpenCode token-saving setup
+rtk-claude-setup          # Install RTK hook for Claude Code
+rtk-opencode-setup        # Install RTK plugin for OpenCode
+caveman-claude-setup      # Install Caveman plugin for Claude Code
+caveman-opencode-setup    # Install Caveman skill for OpenCode
 
 # Ollama Management
 llm-start                 # Start Ollama service
@@ -255,6 +320,87 @@ ai analyze .
 # General development questions
 ai chat "How do I optimize this SQL query?"
 ai chat "Best practices for error handling in Go"
+```
+
+### Token Savings Proof
+
+This setup uses two independent token reducers:
+
+- **RTK** reduces noisy tool/command output before Claude Code or OpenCode sees it.
+- **Caveman** reduces assistant response tokens while keeping technical substance.
+
+Check RTK savings after real coding sessions:
+
+```bash
+rtk gain                 # Total estimated token savings
+rtk gain --history       # Recent command-level savings
+rtk gain --daily         # Daily savings receipt
+rtk gain --graph         # ASCII savings graph
+rtk discover             # Commands that could save more with RTK
+rtk session              # Recent session adoption
+```
+
+Export RTK stats for reports:
+
+```bash
+rtk gain --all --format json
+```
+
+Check Caveman savings inside Claude Code:
+
+```text
+/caveman-stats
+/caveman-stats --all
+/caveman-stats --since 7d
+/caveman-stats --share
+```
+
+Run a simple before/after comparison:
+
+```bash
+# Standard noisy output
+git status
+git diff
+npm test
+
+# RTK-compressed output
+rtk git status
+rtk git diff
+rtk test npm test
+
+# Show command-level receipt
+rtk gain --history
+```
+
+For Caveman output savings, compare the same prompt in normal mode and Caveman mode, then run `/caveman-stats`:
+
+```text
+normal mode
+explain this error and suggest a fix
+
+caveman mode
+explain this error and suggest a fix
+
+/caveman-stats
+```
+
+Best daily proof after a real session:
+
+```bash
+rtk gain --daily
+```
+
+Then inside Claude Code:
+
+```text
+/caveman-stats --since 1d
+```
+
+Use both receipts together:
+
+```text
+RTK proves tool/input-output compression.
+Caveman proves assistant response/output compression.
 ```
 
 ### Runtime Configuration
